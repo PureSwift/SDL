@@ -20,8 +20,80 @@ public final class Surface {
         SDL_FreeSurface(internalPointer)
     }
     
-    public init(rgb: ) {
+    public init?(rgb size: (width: Int, height: Int),
+                 depth: Int = 32,
+                 mask: (red: UInt, green: UInt, blue: UInt, alpha: UInt) = (0,0,0,0)) {
         
-        guard let internalPointer = SDL_CreateRGBSurface(<#T##flags: Uint32##Uint32#>, <#T##width: Int32##Int32#>, <#T##height: Int32##Int32#>, <#T##depth: Int32##Int32#>, <#T##Rmask: Uint32##Uint32#>, <#T##Gmask: Uint32##Uint32#>, <#T##Bmask: Uint32##Uint32#>, <#T##Amask: Uint32##Uint32#>)
+        guard let internalPointer = SDL_CreateRGBSurface(0, CInt(size.width), CInt(size.height), CInt(depth), CUnsignedInt(mask.red), CUnsignedInt(mask.green), CUnsignedInt(mask.blue), CUnsignedInt(mask.alpha))
+            else { return nil }
+        
+        self.internalPointer = internalPointer
+    }
+    
+    // MARK: - Accessors
+    
+    public var width: Int {
+        
+        return Int(internalPointer.pointee.w)
+    }
+    
+    public var height: Int {
+        
+        return Int(internalPointer.pointee.h)
+    }
+    
+    public var pitch: Int {
+        
+        return Int(internalPointer.pointee.pitch)
+    }
+    
+    internal var mustLock: Bool {
+        
+        // #define SDL_MUSTLOCK(S) (((S)->flags & SDL_RLEACCEL) != 0)
+        @inline(__always)
+        get { return internalPointer.pointee.flags & UInt32(SDL_RLEACCEL) != 0 }
+    }
+    
+    // MARK: - Methods
+    
+    /// Get a pointer to the data of the surface, for direct inspection or modification.
+    public func withUnsafeMutableBytes<Result>(_ body: (UnsafeMutableRawPointer) throws -> Result) rethrows -> Result? {
+        
+        let mustLock = self.mustLock
+        
+        if mustLock {
+            
+            guard lock() else { return nil }
+        }
+        
+        let result = try body(internalPointer.pointee.pixels)
+        
+        if mustLock {
+            
+            unlock()
+        }
+        
+        return result
+    }
+    
+    /// Sets up a surface for directly accessing the pixels.
+    ///
+    /// Between calls to `lock()` / `unlock()`, you can write to and read from `surface->pixels`,
+    /// using the pixel format stored in `surface->format`.
+    /// Once you are done accessing the surface, you should use `unlock()` to release it.
+    /// Not all surfaces require locking.
+    /// If `Surface.mustLock` is `false`, then you can read and write to the surface at any time,
+    /// and the pixel format of the surface will not change.
+    ///
+    /// - Note: No operating system or library calls should be made between lock/unlock pairs,
+    /// as critical system locks may be held during this time.
+    internal func lock() -> Bool {
+        
+        return SDL_LockSurface(internalPointer) > 0
+    }
+    
+    internal func unlock() {
+        
+        SDL_UnlockSurface(internalPointer)
     }
 }
