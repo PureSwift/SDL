@@ -1,7 +1,19 @@
 import CSDL2
 import SDL
 
-print("Hello world")
+print("All Render Drivers:")
+Renderer.Driver.all.forEach { print($0) }
+
+extension Optional {
+    
+    var sdlUnwrap: Wrapped {
+        
+        guard let value = self
+            else { fatalError("SDL error: \(SDL.errorDescription ?? "")") }
+        
+        return value
+    }
+}
 
 var isRunning = true
 
@@ -10,20 +22,15 @@ guard SDL.initialize(subSystems: [.video])
 
 let windowSize = (width: 600, height: 480)
 
-let window = Window(title: "Demo", frame: (x: .centered, y: .centered, width: windowSize.width, height: windowSize.height), options: [.resizable, .shown, .opengl])!
+let window = Window(title: "Demo", frame: (x: .centered, y: .centered, width: windowSize.width, height: windowSize.height), options: [.resizable, .shown]).sdlUnwrap
 
 let framesPerSecond = UInt(window.displayMode?.refresh_rate ?? 60)
 
 print("Running at \(framesPerSecond) FPS")
 
-// offscreen surface (for rendering)
-let imageSurface = Surface(rgb: windowSize, depth: 32)!
-
-/// onscreen surface
-let windowSurface = Surface(window: window)!
-
-
-//renderer.drawColor = (0xFF, 0xFF, 0xFF, 0xFF)
+// renderer
+let renderer = Renderer(window: window).sdlUnwrap
+renderer.drawColor = (0xFF, 0xFF, 0xFF, 0xFF)
 
 var frame = 0
 
@@ -34,14 +41,18 @@ while isRunning {
     let startTime = SDL_GetTicks()
     
     // get data for surface
+    let imageSurface = Surface(rgb: windowSize, depth: 32).sdlUnwrap
+    
+    let texture = Texture(renderer: renderer, surface: imageSurface).sdlUnwrap
     
     var needsDisplay = true
     
     if needsDisplay {
         
         // render to screen
-        imageSurface.blit(to: windowSurface)
-        window.updateSurface()
+        renderer.copy(texture)
+        renderer.clear()
+        renderer.present()
     }
     
     // sleep to save energy

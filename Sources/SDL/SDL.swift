@@ -43,7 +43,7 @@ public struct SDL {
 public extension SDL {
     
     /// Specific SDL subsystems.
-    public enum SubSystem: UInt32 {
+    public enum SubSystem: UInt32, BitMaskOption {
         
         case timer = 0x00000001
         case audio = 0x00000010
@@ -55,17 +55,5 @@ public extension SDL {
         
         /// All the SDL subsystems.
         public static let all: Set<SubSystem> = [.timer, .audio, .video, .joystick, .haptic, .gameController, .events]
-    }
-}
-
-// MARK: - Internal Extensions
-
-/// Convert Swift enums for option flags into their raw values OR'd.
-internal extension Collection where Element: RawRepresentable, Element.RawValue: FixedWidthInteger {
-    
-    var flags: Element.RawValue {
-        
-        @inline(__always)
-        get { return reduce(0, { $0 | $1.rawValue }) }
     }
 }
