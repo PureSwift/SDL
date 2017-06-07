@@ -1,32 +1,39 @@
 //
 //  BitMaskOption.swift
-//  SwiftFoundation
+//  SDL
 //
-//  Created by Alsey Coleman Miller on 7/22/15.
-//  Copyright © 2015 PureSwift. All rights reserved.
+//  Created by Alsey Coleman Miller on 6/6/17.
 //
 
-/// Bit mask that represents various options.
-public protocol BitMaskOption: RawRepresentable {
+/// Enum represents a bit mask flag / option.
+public protocol BitMaskOption: RawRepresentable, Hashable where RawValue: FixedWidthInteger {
     
-    static func bitmask(options: [Self]) -> Self.RawValue
+    /// All the cases of the enum.
+    static var all: Set<Self> { get }
 }
 
-public extension BitMaskOption where Self.RawValue: Integer {
+/// Convert Swift enums for option flags into their raw values OR'd.
+internal extension Collection where Element: BitMaskOption {
     
-    static func bitmask<S: Sequence>(options: S) -> Self.RawValue where S.Iterator.Element == Self {
-        return options.reduce(0) { mask, option in
-            mask | option.rawValue
-        }
+    var flags: Element.RawValue {
+        
+        @inline(__always)
+        get { return reduce(0, { $0 | $1.rawValue }) }
     }
 }
 
-public extension Sequence where Self.Iterator.Element: BitMaskOption, Self.Iterator.Element.RawValue: Integer {
+internal extension BitMaskOption {
     
-    func optionsBitmask() -> Self.Iterator.Element.RawValue {
+    /// Whether the enum case is present in the raw value.
+    @inline(__always)
+    func isContained(in rawValue: RawValue) -> Bool {
         
-        let array = self.filter { (_) -> Bool in return true }
+        return (self.rawValue & rawValue) != 0
+    }
+    
+    @inline(__always)
+    static func from(flags: RawValue) -> Set<Self> {
         
-        return Self.Iterator.Element.bitmask(options: array)
+        return Self.all.filter({ $0.isContained(in: flags) })
     }
 }
