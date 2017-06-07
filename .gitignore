@@ -66,6 +66,7 @@ fastlane/Preview.html
 fastlane/screenshots
 fastlane/test_output
 
-# SwiftPM Generated Xcode Project
+# SwiftPM 
+Packages
 SDL.xcodeproj
 
