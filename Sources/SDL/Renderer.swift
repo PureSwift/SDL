@@ -147,7 +147,7 @@ public extension Renderer {
             
             // copy formats array
             let formatsCount = Int(info.num_texture_formats)
-            var formats = [info.texture_formats.0,
+            let formats = [info.texture_formats.0,
                            info.texture_formats.1,
                            info.texture_formats.2,
                            info.texture_formats.3,

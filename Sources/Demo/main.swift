@@ -2,7 +2,7 @@ import CSDL2
 import SDL
 
 print("All Render Drivers:")
-Renderer.Driver.all.forEach { print($0) }
+Renderer.Driver.all.forEach { dump($0) }
 
 extension Optional {
     
@@ -22,7 +22,7 @@ guard SDL.initialize(subSystems: [.video])
 
 let windowSize = (width: 600, height: 480)
 
-let window = Window(title: "Demo", frame: (x: .centered, y: .centered, width: windowSize.width, height: windowSize.height), options: [.resizable, .shown]).sdlUnwrap
+let window = Window(title: "SDLDemo", frame: (x: .centered, y: .centered, width: windowSize.width, height: windowSize.height), options: [.resizable, .shown]).sdlUnwrap
 
 let framesPerSecond = UInt(window.displayMode?.refresh_rate ?? 60)
 
@@ -34,25 +34,38 @@ renderer.drawColor = (0xFF, 0xFF, 0xFF, 0xFF)
 
 var frame = 0
 
+var event = SDL_Event()
+
+var needsDisplay = true
+
 while isRunning {
+    
+    SDL_PollEvent(&event)
     
     // increment ticker
     frame += 1
     let startTime = SDL_GetTicks()
     
-    // get data for surface
-    let imageSurface = Surface(rgb: windowSize, depth: 32).sdlUnwrap
-    
-    let texture = Texture(renderer: renderer, surface: imageSurface).sdlUnwrap
-    
-    var needsDisplay = true
+    if event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED.rawValue {
+        
+        needsDisplay = true
+    }
     
     if needsDisplay {
+        
+        // get data for surface
+        let imageSurface = Surface(rgb: windowSize, depth: 32).sdlUnwrap
+        
+        let texture = Texture(renderer: renderer, surface: imageSurface).sdlUnwrap
         
         // render to screen
         renderer.copy(texture)
         renderer.clear()
         renderer.present()
+        
+        print("Did redraw screen")
+        
+        needsDisplay = false
     }
     
     // sleep to save energy
