@@ -16,7 +16,6 @@ public final class Surface {
     // MARK: - Initialization
     
     deinit {
-        
         SDL_FreeSurface(internalPointer)
     }
     

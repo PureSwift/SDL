@@ -20,19 +20,28 @@ public final class PixelFormat {
         SDL_FreeFormat(internalPointer)
     }
     
-    public init() {
+    public init?(rawValue: UInt32) {
         
-        fatalError()
+        guard let internalFormat = SDL_AllocFormat(rawValue)
+            else { return nil }
+        
+        self.internalPointer = internalFormat
     }
     
-    // MARK: - Accessors
+    // MARK: - Methods
     
-    /*
-    public var palette: Palette {
+    @inline(__always)
+    public static func name(for rawValue: UInt32) -> String? {
         
-        get { }
+        guard let cString = SDL_GetPixelFormatName(rawValue)
+            else { return nil }
         
-        set { SDL_SetPixelFormatPalette(<#T##format: UnsafeMutablePointer<SDL_PixelFormat>!##UnsafeMutablePointer<SDL_PixelFormat>!#>, <#T##palette: UnsafeMutablePointer<SDL_Palette>!##UnsafeMutablePointer<SDL_Palette>!#>) }
-    }*/
+        return String(cString: cString)
+    }
+    
+    /// Set the palette for a pixel format structure
+    public func setPalette(_ palette: Palette) -> Bool {
+        
+        SDL_SetPixelFormatPalette(internalPointer, palette.internalPointer)
+    }
 }
-
