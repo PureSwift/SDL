@@ -66,6 +66,6 @@ internal extension Collection where Element: RawRepresentable, Element.RawValue:
     var flags: Element.RawValue {
         
         @inline(__always)
-        get { return reduce(0, { $0.0 | $0.1.rawValue  }) }
+        get { return reduce(0, { $0 | $1.rawValue }) }
     }
 }
