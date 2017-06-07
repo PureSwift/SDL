@@ -96,45 +96,37 @@ public final class Texture {
     
     // MARK: - Methods
     
-    /// Get a pointer to the data of the surface, for direct inspection or modification.
-    public func withUnsafeMutableBytes<Result>(_ body: (UnsafeMutableRawPointer) throws -> Result) rethrows -> Result? {
+    /// Lock a portion of the texture for write-only pixel access (only valid for streaming textures).
+    /// - Parameter rect: A pointer to the rectangle to lock for access.
+    /// If the rect is `nil`, the entire texture will be locked.
+    /// appropriately offset by the locked area.
+    /// - Parameter body: The closure is called with the pixel pointer and pitch.
+    public func withUnsafeMutableBytes<Result>(for rect: SDL_Rect? = nil, _ body: (UnsafeMutableRawPointer, Int) throws -> Result) rethrows -> Result? {
         
-        let mustLock = self.access.lockable
+        let rectPointer: UnsafeMutablePointer<SDL_Rect>?
         
-        if mustLock {
+        if var rect = rect {
             
-            guard lock() else { return nil }
+            rectPointer = UnsafeMutablePointer.allocate(capacity: 1)
+            
+            rectPointer?.pointee = rect
+            
+            defer { rectPointer?.deallocate(capacity: 1) }
+            
+        } else {
+            
+            rectPointer = nil
         }
         
-        let result = try body(internalPointer.pointee.pixels)
+        var pitch: Int32 = 0
         
-        if mustLock {
-            
-            unlock()
-        }
+        var pixels: UnsafeMutableRawPointer? = nil
         
-        return result
-    }
-    
-    /// Sets up a surface for directly accessing the pixels.
-    ///
-    /// Between calls to `lock()` / `unlock()`, you can write to and read from `surface->pixels`,
-    /// using the pixel format stored in `surface->format`.
-    /// Once you are done accessing the surface, you should use `unlock()` to release it.
-    /// Not all surfaces require locking.
-    /// If `Surface.mustLock` is `false`, then you can read and write to the surface at any time,
-    /// and the pixel format of the surface will not change.
-    ///
-    /// - Note: No operating system or library calls should be made between lock/unlock pairs,
-    /// as critical system locks may be held during this time.
-    internal func lock() -> Bool {
+        guard SDL_LockTexture(internalPointer, rectPointer, &pixels, &pitch) > 0,
+            let pointer = pixels
+            else { return nil }
         
-        return SDL_LockTexture(<#T##texture: OpaquePointer!##OpaquePointer!#>, <#T##rect: UnsafePointer<SDL_Rect>!##UnsafePointer<SDL_Rect>!#>, <#T##pixels: UnsafeMutablePointer<UnsafeMutableRawPointer?>!##UnsafeMutablePointer<UnsafeMutableRawPointer?>!#>, <#T##pitch: UnsafeMutablePointer<Int32>!##UnsafeMutablePointer<Int32>!#>)(internalPointer) > 0
-    }
-    
-    internal func unlock() {
-        
-        SDL_UnlockSurface(internalPointer)
+        return try body(pointer, Int(pitch))
     }
 }
 
@@ -150,14 +142,5 @@ public extension Texture {
         
         /// Texture can be used as a render target
         case target
-        
-        public var lockable: Bool {
-            
-            switch self {
-            case .static: return false
-            case .streaming: return true
-            case .target: return false // Valid?
-            }
-        }
     }
 }
