@@ -10,7 +10,7 @@ public struct SDL {
     @inline(__always)
     public static func initialize(subSystems: Set<SubSystem>) -> Bool {
                 
-        return SDL_Init(subSystems.flags) > 0
+        return SDL_Init(subSystems.flags) >= 0
     }
     
     /// Cleans up all initialized subsystems.

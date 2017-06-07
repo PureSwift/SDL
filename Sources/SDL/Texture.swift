@@ -58,7 +58,7 @@ public final class Texture {
         
         var value = UInt32()
         
-        guard SDL_QueryTexture(internalPointer, &value, nil, nil, nil) > 0
+        guard SDL_QueryTexture(internalPointer, &value, nil, nil, nil) >= 0
             else { return 0 }
         
         return value
@@ -68,7 +68,7 @@ public final class Texture {
         
         var value = Int32()
         
-        guard SDL_QueryTexture(internalPointer, nil, &value, nil, nil) > 0
+        guard SDL_QueryTexture(internalPointer, nil, &value, nil, nil) >= 0
             else { return .static }
         
         return Access(rawValue: value)!
@@ -78,7 +78,7 @@ public final class Texture {
         
         var value = Int32()
         
-        guard SDL_QueryTexture(internalPointer, nil, nil, &value, nil) > 0
+        guard SDL_QueryTexture(internalPointer, nil, nil, &value, nil) >= 0
             else { return 0 }
         
         return Int(value)
@@ -88,7 +88,7 @@ public final class Texture {
         
         var value = Int32()
         
-        guard SDL_QueryTexture(internalPointer, nil, nil, nil, &value) > 0
+        guard SDL_QueryTexture(internalPointer, nil, nil, nil, &value) >= 0
             else { return 0 }
         
         return Int(value)
@@ -125,7 +125,7 @@ public final class Texture {
         
         var pixels: UnsafeMutableRawPointer? = nil
         
-        guard SDL_LockTexture(internalPointer, rectPointer, &pixels, &pitch) > 0,
+        guard SDL_LockTexture(internalPointer, rectPointer, &pixels, &pitch) >= 0,
             let pointer = pixels
             else { return nil }
         

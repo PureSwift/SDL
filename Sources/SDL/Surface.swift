@@ -102,11 +102,18 @@ public final class Surface {
     /// as critical system locks may be held during this time.
     internal func lock() -> Bool {
         
-        return SDL_LockSurface(internalPointer) > 0
+        return SDL_LockSurface(internalPointer) >= 0
     }
     
     internal func unlock() {
         
         SDL_UnlockSurface(internalPointer)
+    }
+    
+    @discardableResult
+    public func blit(to surface: Surface, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) -> Bool {
+        
+        // TODO rects
+        return SDL_UpperBlit(self.internalPointer, nil, surface.internalPointer, nil) >= 0
     }
 }

@@ -35,7 +35,7 @@ public final class Window {
         
         var sdlDisplayMode = SDL_DisplayMode()
         
-        guard SDL_GetWindowDisplayMode(internalPointer, &sdlDisplayMode) > 0
+        guard SDL_GetWindowDisplayMode(internalPointer, &sdlDisplayMode) >= 0
             else { return nil }
         
         return sdlDisplayMode
@@ -54,11 +54,11 @@ public final class Window {
         
         if var newValue = newValue {
             
-            return SDL_SetWindowDisplayMode(internalPointer, &newValue) > 0
+            return SDL_SetWindowDisplayMode(internalPointer, &newValue) >= 0
             
         } else {
             
-            return SDL_SetWindowDisplayMode(internalPointer, nil) > 0
+            return SDL_SetWindowDisplayMode(internalPointer, nil) >= 0
         }
     }
 }

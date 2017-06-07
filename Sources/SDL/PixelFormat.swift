@@ -58,6 +58,6 @@ public final class PixelFormat: RawRepresentable {
     /// Set the palette for a pixel format structure
     public func setPalette(_ palette: Palette) -> Bool {
         
-        return SDL_SetPixelFormatPalette(internalPointer, palette.internalPointer) > 0
+        return SDL_SetPixelFormatPalette(internalPointer, palette.internalPointer) >= 0
     }
 }
