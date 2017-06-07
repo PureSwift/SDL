@@ -7,7 +7,9 @@
 
 import CSDL2
 
-public final class PixelFormat {
+public final class PixelFormat: RawRepresentable {
+    
+    public typealias RawValue = UInt32
     
     // MARK: - Properties
     
@@ -20,7 +22,7 @@ public final class PixelFormat {
         SDL_FreeFormat(internalPointer)
     }
     
-    public init?(rawValue: UInt32) {
+    public init?(rawValue: RawValue) {
         
         guard let internalFormat = SDL_AllocFormat(rawValue)
             else { return nil }
@@ -28,7 +30,19 @@ public final class PixelFormat {
         self.internalPointer = internalFormat
     }
     
-    // MARK: - Methods
+    // MARK: - Accessors
+    
+    public var rawValue: RawValue {
+        
+        return internalPointer.pointee.format
+    }
+    
+    public var name: String {
+        
+        return PixelFormat.name(for: self.internalPointer.pointee.format) ?? ""
+    }
+    
+    // MARK: - Class Methods
     
     @inline(__always)
     public static func name(for rawValue: UInt32) -> String? {
@@ -39,9 +53,11 @@ public final class PixelFormat {
         return String(cString: cString)
     }
     
+    // MARK: - Methods
+    
     /// Set the palette for a pixel format structure
     public func setPalette(_ palette: Palette) -> Bool {
         
-        SDL_SetPixelFormatPalette(internalPointer, palette.internalPointer)
+        return SDL_SetPixelFormatPalette(internalPointer, palette.internalPointer) > 0
     }
 }

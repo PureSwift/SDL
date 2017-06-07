@@ -26,4 +26,11 @@ public final class Palette {
         
         self.internalPointer = internalFormat
     }
+    
+    // MARK: - Accessors
+    
+    public var numberOfColors: Int {
+        
+        return Int(internalPointer.pointee.ncolors)
+    }
 }

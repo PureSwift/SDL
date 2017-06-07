@@ -19,10 +19,30 @@ public final class Texture {
         SDL_DestroyTexture(internalPointer)
     }
     
-    public init?(renderer: Renderer, format: UInt32, access: Int, width: Int, height: Int) {
+    public init?(renderer: Renderer, format: PixelFormat.RawValue, access: Access, width: Int, height: Int) {
         
-        guard let internalPointer = SDL_CreateTexture(internalPointer, <#T##format: Uint32##Uint32#>, <#T##access: Int32##Int32#>, <#T##w: Int32##Int32#>, <#T##h: Int32##Int32#>) else { return nil }
+        guard let internalPointer = SDL_CreateTexture(renderer.internalPointer,
+                                                      format,
+                                                      access.rawValue,
+                                                      Int32(width),
+                                                      Int32(height))
+            else { return nil }
         
         self.internalPointer = internalPointer
+    }
+}
+
+public extension Texture {
+    
+    public enum Access: Int32 {
+        
+        /// Changes rarely, not lockable.
+        case `static`
+        
+        /// Changes frequently, lockable.
+        case streaming
+        
+        /// Texture can be used as a render target
+        case target
     }
 }

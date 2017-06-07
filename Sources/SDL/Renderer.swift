@@ -21,7 +21,7 @@ public final class Renderer {
     
     public init?(window: Window, index: Int, flags: UInt32) {
         
-        guard let internalPointer = SDL_CreateRenderer(window.internalPointer, index, flags)
+        guard let internalPointer = SDL_CreateRenderer(window.internalPointer, Int32(index), flags)
             else { return nil }
         
         self.internalPointer = internalPointer
