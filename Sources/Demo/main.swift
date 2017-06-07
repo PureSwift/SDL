@@ -10,17 +10,20 @@ guard SDL.initialize(subSystems: [.video])
 
 let windowSize = (width: 600, height: 480)
 
-let window = Window(title: "Demo", frame: (x: .centered, y: .centered, width: windowSize.width, height: windowSize.height), options: [.resizable])!
+let window = Window(title: "Demo", frame: (x: .centered, y: .centered, width: windowSize.width, height: windowSize.height), options: [.resizable, .shown, .opengl])!
 
 let framesPerSecond = UInt(window.displayMode?.refresh_rate ?? 60)
 
 print("Running at \(framesPerSecond) FPS")
 
+// offscreen surface (for rendering)
 let imageSurface = Surface(rgb: windowSize, depth: 32)!
 
+/// onscreen surface
 let windowSurface = Surface(window: window)!
 
 
+//renderer.drawColor = (0xFF, 0xFF, 0xFF, 0xFF)
 
 var frame = 0
 
@@ -32,9 +35,14 @@ while isRunning {
     
     // get data for surface
     
+    var needsDisplay = true
     
-    // render to screen
-    imageSurface.blit(to: windowSurface)
+    if needsDisplay {
+        
+        // render to screen
+        imageSurface.blit(to: windowSurface)
+        window.updateSurface()
+    }
     
     // sleep to save energy
     let frameDuration = SDL_GetTicks() - startTime
