@@ -27,3 +27,13 @@ public final class Renderer {
         self.internalPointer = internalPointer
     }
 }
+
+// MARK: - Supporting Types
+
+public extension Renderer {
+    
+    public struct Info {
+        
+        
+    }
+}

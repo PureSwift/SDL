@@ -29,6 +29,20 @@ public final class Surface {
         self.internalPointer = internalPointer
     }
     
+    // Get the SDL surface associated with the window.
+    ///
+    /// A new surface will be created with the optimal format for the window,
+    /// if necessary. This surface will be freed when the window is destroyed.
+    /// - Returns: The window's framebuffer surface, or `nil` on error.
+    /// - Note: You may not combine this with 3D or the rendering API on this window.
+    public init?(window: Window) {
+        
+        guard let internalPointer = SDL_GetWindowSurface(window.internalPointer)
+            else { return nil }
+        
+        self.internalPointer = internalPointer
+    }
+    
     // MARK: - Accessors
     
     public var width: Int {

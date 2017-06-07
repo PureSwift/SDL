@@ -99,8 +99,8 @@ public final class Texture {
     /// Lock a portion of the texture for write-only pixel access (only valid for streaming textures).
     /// - Parameters:
     ///     - rect: A pointer to the rectangle to lock for access.
-    /// If the rect is `nil`, the entire texture will be locked.
-    /// appropriately offset by the locked area.
+    ///             If the rect is `nil`, the entire texture will be locked.
+    ///             appropriately offset by the locked area.
     ///     - body: The closure is called with the pixel pointer and pitch.
     ///     - pointer: The pixel pointer.
     ///     - pitch: The pitch.
