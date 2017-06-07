@@ -97,11 +97,14 @@ public final class Texture {
     // MARK: - Methods
     
     /// Lock a portion of the texture for write-only pixel access (only valid for streaming textures).
-    /// - Parameter rect: A pointer to the rectangle to lock for access.
+    /// - Parameters:
+    ///     - rect: A pointer to the rectangle to lock for access.
     /// If the rect is `nil`, the entire texture will be locked.
     /// appropriately offset by the locked area.
-    /// - Parameter body: The closure is called with the pixel pointer and pitch.
-    public func withUnsafeMutableBytes<Result>(for rect: SDL_Rect? = nil, _ body: (UnsafeMutableRawPointer, Int) throws -> Result) rethrows -> Result? {
+    ///     - body: The closure is called with the pixel pointer and pitch.
+    ///     - pointer: The pixel pointer.
+    ///     - pitch: The pitch.
+    public func withUnsafeMutableBytes<Result>(for rect: SDL_Rect? = nil, _ body: (_ pointer: UnsafeMutableRawPointer, _ pitch: Int) throws -> Result) rethrows -> Result? {
         
         let rectPointer: UnsafeMutablePointer<SDL_Rect>?
         
