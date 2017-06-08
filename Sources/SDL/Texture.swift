@@ -94,6 +94,21 @@ public final class Texture {
         return Int(value)
     }
     
+    /// The blend mode used for texture copy operations.
+    public var blendMode: BlendMode {
+        
+        get {
+            
+            var value = SDL_BlendMode(.none)
+            
+            SDL_GetTextureBlendMode(internalPointer, &value)
+            
+            return BlendMode(value)
+        }
+        
+        set { SDL_SetTextureBlendMode(internalPointer, SDL_BlendMode(newValue)) }
+    }
+    
     // MARK: - Methods
     
     /// Lock a portion of the texture for write-only pixel access (only valid for streaming textures).

@@ -48,6 +48,27 @@ public final class Renderer {
         }
     }
     
+    /// Current rendering target texture.
+    public var target: Texture? {
+        
+        didSet { SDL_SetRenderTarget(internalPointer, target?.internalPointer) }
+    }
+    
+    /// The blend mode used for drawing operations (Fill and Line).
+    public var drawBlendMode: BlendMode {
+        
+        get {
+            
+            var value = SDL_BlendMode(.none)
+            
+            SDL_GetRenderDrawBlendMode(internalPointer, &value)
+            
+            return BlendMode(value)
+        }
+        
+        set { SDL_SetRenderDrawBlendMode(internalPointer, SDL_BlendMode(newValue)) }
+    }
+    
     // MARK: - Methods
     
     /// Clear the current rendering target with the drawing color
