@@ -20,6 +20,8 @@ var isRunning = true
 guard SDL.initialize(subSystems: [.video])
     else { fatalError("Could not setup SDL subsystems: \(SDL.errorDescription ?? "")") }
 
+defer { SDL.quit() }
+
 let windowSize = (width: 600, height: 480)
 
 let window = Window(title: "SDLDemo", frame: (x: .centered, y: .centered, width: windowSize.width, height: windowSize.height), options: [.resizable, .shown]).sdlUnwrap
@@ -46,9 +48,24 @@ while isRunning {
     frame += 1
     let startTime = SDL_GetTicks()
     
-    if event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED.rawValue {
+    let eventType = SDL_EventType(rawValue: event.type)
+    
+    switch eventType {
         
-        needsDisplay = true
+    case SDL_QUIT, SDL_APP_TERMINATING:
+        
+        isRunning = false
+        
+    case SDL_WINDOWEVENT:
+        
+        if event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED.rawValue {
+            
+            needsDisplay = true
+        }
+        
+    default:
+        
+        break
     }
     
     if needsDisplay {
@@ -59,8 +76,8 @@ while isRunning {
         let texture = Texture(renderer: renderer, surface: imageSurface).sdlUnwrap
         
         // render to screen
-        renderer.copy(texture)
         renderer.clear()
+        renderer.copy(texture)
         renderer.present()
         
         print("Did redraw screen")
@@ -74,5 +91,3 @@ while isRunning {
         SDL_Delay((1000 / UInt32(framesPerSecond)) - frameDuration)
     }
 }
-
-SDL.quit()

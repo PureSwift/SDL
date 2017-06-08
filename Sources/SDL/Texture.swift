@@ -129,7 +129,11 @@ public final class Texture {
             let pointer = pixels
             else { return nil }
         
-        return try body(pointer, Int(pitch))
+        let result = try body(pointer, Int(pitch))
+        
+        SDL_UnlockTexture(internalPointer)
+        
+        return result
     }
 }
 
