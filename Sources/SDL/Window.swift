@@ -41,6 +41,45 @@ public final class Window {
         return sdlDisplayMode
     }
     
+    /// Use this function to get the size of a window's client area (in points).
+    public var size: (width: Int, height: Int) {
+        
+        get {
+            
+            var width: Int32 = 0
+            var height: Int32 = 0
+            SDL_GetWindowSize(internalPointer, &width, &height)
+            
+            return (Int(width), Int(height))
+        }
+        
+        set { SDL_SetWindowSize(internalPointer, Int32(size.width), Int32(size.height)) }
+    }
+    
+    /// Size of a window's underlying drawable in pixels (for use with glViewport).
+    ///
+    /// This may differ from `size` if we're rendering to a high-DPI drawable,
+    /// i.e. the window was created with `.allowRetina` on a platform with Retina support.
+    public var drawableSize: (width: Int, height: Int) {
+        
+        var width: Int32 = 0
+        var height: Int32 = 0
+        SDL_GL_GetDrawableSize(internalPointer, &width, &height)
+        
+        return (Int(width), Int(height))
+    }
+    
+    /// The output size in pixels of a rendering context.
+    public var rendererSize: (width: Int, height: Int)? {
+        
+        var width: Int32 = 0
+        var height: Int32 = 0
+        guard SDL_GetRendererOutputSize(internalPointer, &width, &height) >= 0
+            else { return nil }
+        
+        return (Int(width), Int(height))
+    }
+    
     // MARK: - Methods
     
     /// Copy the window surface to the screen.

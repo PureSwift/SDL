@@ -19,6 +19,7 @@ public final class Renderer {
         SDL_DestroyRenderer(internalPointer)
     }
     
+    /// Create a 2D rendering context for a window.
     public init?(window: Window, driver: Driver = .default, options: Set<Option> = []) {
         
         guard let internalPointer = SDL_CreateRenderer(window.internalPointer, Int32(driver.index), options.flags)
@@ -191,7 +192,12 @@ public extension Renderer {
     
     public struct Driver {
         
-        public static let all = SDL.RenderDrivers()
+        public static var all: [Driver] {
+            
+            let drivers = SDL.RenderDrivers()
+            
+            return drivers.indices.map { Driver(index: $0) }
+        }
         
         public static let `default` = Driver(index: -1)
         
