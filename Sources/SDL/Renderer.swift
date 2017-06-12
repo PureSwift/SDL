@@ -92,13 +92,13 @@ public final class Renderer {
         
         let sourcePointer: UnsafeMutablePointer<SDL_Rect>?
         
+        defer { sourcePointer?.deallocate(capacity: 1) }
+        
         if var rect = source {
             
             sourcePointer = UnsafeMutablePointer.allocate(capacity: 1)
             
             sourcePointer?.pointee = rect
-            
-            defer { sourcePointer?.deallocate(capacity: 1) }
             
         } else {
             
@@ -107,13 +107,13 @@ public final class Renderer {
         
         let destinationPointer: UnsafeMutablePointer<SDL_Rect>?
         
+        defer { destinationPointer?.deallocate(capacity: 1) }
+        
         if var rect = destination {
             
             destinationPointer = UnsafeMutablePointer.allocate(capacity: 1)
             
             destinationPointer?.pointee = rect
-            
-            defer { destinationPointer?.deallocate(capacity: 1) }
             
         } else {
             
