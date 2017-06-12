@@ -94,7 +94,7 @@ public final class Renderer {
         
         defer { sourcePointer?.deallocate(capacity: 1) }
         
-        if var rect = source {
+        if let rect = source {
             
             sourcePointer = UnsafeMutablePointer.allocate(capacity: 1)
             
@@ -109,7 +109,7 @@ public final class Renderer {
         
         defer { destinationPointer?.deallocate(capacity: 1) }
         
-        if var rect = destination {
+        if let rect = destination {
             
             destinationPointer = UnsafeMutablePointer.allocate(capacity: 1)
             
