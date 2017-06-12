@@ -7,7 +7,6 @@ public struct SDL {
     /// You should specify the subsystems which you will be using in your application
     ///
     /// - Note: This must be called before using most other SDL functions.
-    @inline(__always)
     public static func initialize(subSystems: Set<SubSystem>) -> Bool {
                 
         return SDL_Init(subSystems.flags) >= 0
@@ -22,7 +21,6 @@ public struct SDL {
     }
     
     /// Cleans up specific SDL subsystems
-    @inline(__always)
     public static func quit(subSystems: Set<SubSystem>) {
         
         return SDL_QuitSubSystem(subSystems.flags)
