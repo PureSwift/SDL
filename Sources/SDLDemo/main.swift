@@ -2,7 +2,8 @@ import CSDL2
 import SDL
 
 print("All Render Drivers:")
-Renderer.Driver.all.forEach { dump($0) }
+let renderDrivers = SDL.RenderDrivers()
+renderDrivers.forEach { dump($0) }
 
 extension Optional {
     
@@ -71,13 +72,14 @@ while isRunning {
     if needsDisplay {
         
         // get data for surface
-        let imageSurface = Surface(rgb: windowSize, depth: 32).sdlUnwrap
+        let textureSize = (width: 100, height: 100)
+        let imageSurface = Surface(rgb: textureSize, depth: 32).sdlUnwrap
         
         let texture = Texture(renderer: renderer, surface: imageSurface).sdlUnwrap
         
         // render to screen
         renderer.clear()
-        renderer.copy(texture)
+        renderer.copy(texture, destination: SDL_Rect(x: 50, y: 50, w: Int32(textureSize.width), h: Int32(textureSize.height)))
         renderer.present()
         
         print("Did redraw screen")
