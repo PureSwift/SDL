@@ -140,13 +140,15 @@ public final class Texture {
         
         var pixels: UnsafeMutableRawPointer? = nil
         
-        guard SDL_LockTexture(internalPointer, rectPointer, &pixels, &pitch) >= 0,
-            let pointer = pixels
+        guard SDL_LockTexture(internalPointer, rectPointer, &pixels, &pitch) >= 0
+            else { return nil }
+        
+        defer { SDL_UnlockTexture(internalPointer) }
+        
+        guard let pointer = pixels
             else { return nil }
         
         let result = try body(pointer, Int(pitch))
-        
-        SDL_UnlockTexture(internalPointer)
         
         return result
     }
