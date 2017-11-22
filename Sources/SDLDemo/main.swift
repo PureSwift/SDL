@@ -59,7 +59,7 @@ while isRunning {
         
     case SDL_WINDOWEVENT:
         
-        if event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED.rawValue {
+        if event.window.event == UInt8(SDL_WINDOWEVENT_SIZE_CHANGED.rawValue) {
             
             needsDisplay = true
         }
@@ -89,7 +89,7 @@ while isRunning {
     
     // sleep to save energy
     let frameDuration = SDL_GetTicks() - startTime
-    if frameDuration < 1000 / framesPerSecond {
+    if frameDuration < 1000 / UInt32(framesPerSecond) {
         SDL_Delay((1000 / UInt32(framesPerSecond)) - frameDuration)
     }
 }

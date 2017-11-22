@@ -5,9 +5,9 @@
         "package": "CSDL2",
         "repositoryURL": "https://github.com/PureSwift/CSDL2.git",
         "state": {
-          "branch": "master",
+          "branch": null,
           "revision": "a4798aa0174f6661404b9df4ccaf2ba1dc9cc92c",
-          "version": null
+          "version": "1.0.1"
         }
       }
     ]
