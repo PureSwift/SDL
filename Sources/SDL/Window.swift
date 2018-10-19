@@ -33,14 +33,11 @@ public final class SDLWindow {
     // MARK: - Accessors
     
     /// Fill in information about the display mode used when a fullscreen window is visible.
-    public var displayMode: SDL_DisplayMode? {
+    public func displayMode() throws -> SDLDisplayMode {
         
         var sdlDisplayMode = SDL_DisplayMode()
-        
-        guard SDL_GetWindowDisplayMode(internalPointer, &sdlDisplayMode) >= 0
-            else { return nil }
-        
-        return sdlDisplayMode
+        try SDL_GetWindowDisplayMode(internalPointer, &sdlDisplayMode).sdlThrow()
+        return SDLDisplayMode(sdlDisplayMode)
     }
     
     /// Use this function to get the size of a window's client area (in points).
@@ -85,9 +82,9 @@ public final class SDLWindow {
     // MARK: - Methods
     
     /// Copy the window surface to the screen.
-    public func updateSurface() {
+    public func updateSurface() throws {
         
-        SDL_UpdateWindowSurface(internalPointer)
+        try SDL_UpdateWindowSurface(internalPointer).sdlThrow()
     }
     
     /// Set the display mode to use when a window is visible at fullscreen.
@@ -135,7 +132,6 @@ public extension SDLWindow {
             }
         }
     }
-    
 }
 
 public extension SDLWindow {
@@ -203,7 +199,7 @@ public extension SDLWindow {
         case popupMenu = 0x00080000
         
         public static let all: Set<SDLWindow.Option> = Set(
-            (Option.fullscreen.rawValue ... Option.fullscreen.rawValue)
+            (Option.fullscreen.rawValue ... Option.popupMenu.rawValue)
                 .compactMap({ Option(rawValue: $0) })
         )
     }
