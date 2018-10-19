@@ -96,7 +96,7 @@ public final class SDLTexture {
     ///     - body: The closure is called with the pixel pointer and pitch.
     ///     - pointer: The pixel pointer.
     ///     - pitch: The pitch.
-    public func withUnsafeMutableBytes<Result>(for rect: SDL_Rect? = nil, _ body: (_ pointer: UnsafeMutableRawPointer, _ pitch: Int) throws -> Result) rethrows -> Result? {
+    public func withUnsafeMutableBytes<Result>(for rect: SDL_Rect? = nil, _ body: (_ pointer: UnsafeMutableRawPointer, _ pitch: Int) throws -> Result) throws -> Result? {
         
         let rectPointer: UnsafeMutablePointer<SDL_Rect>?
         
@@ -106,7 +106,7 @@ public final class SDLTexture {
             
             rectPointer?.pointee = rect
             
-            defer { rectPointer?.deallocate(capacity: 1) }
+            defer { rectPointer?.deallocate() }
             
         } else {
             
@@ -117,8 +117,7 @@ public final class SDLTexture {
         
         var pixels: UnsafeMutableRawPointer? = nil
         
-        guard SDL_LockTexture(internalPointer, rectPointer, &pixels, &pitch) >= 0
-            else { return nil }
+        try SDL_LockTexture(internalPointer, rectPointer, &pixels, &pitch).sdlThrow()
         
         defer { SDL_UnlockTexture(internalPointer) }
         

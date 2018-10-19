@@ -7,7 +7,8 @@
 
 import CSDL2
 
-public final class Window {
+/// SDL Window
+public final class SDLWindow {
     
     // MARK: - Properties
     
@@ -20,12 +21,13 @@ public final class Window {
     }
     
     /// Create a window with the specified position, dimensions, and flags.
-    public init?(title: String, frame: (x: Position, y: Position, width: Int, height: Int), options: Set<Option> = []) {
+    public init(title: String,
+                frame: (x: Position, y: Position, width: Int, height: Int),
+                options: BitMaskOptionSet<SDLWindow.Option> = []) throws {
         
-        guard let internalPointer = SDL_CreateWindow(title, frame.x.rawValue, frame.y.rawValue, Int32(frame.width), Int32(frame.height), options.rawValue)
-            else { return nil }
+        let internalPointer = SDL_CreateWindow(title, frame.x.rawValue, frame.y.rawValue, Int32(frame.width), Int32(frame.height), options.rawValue)
         
-        self.internalPointer = internalPointer
+        self.internalPointer = try internalPointer.sdlThrow()
     }
     
     // MARK: - Accessors
@@ -107,7 +109,7 @@ public final class Window {
 private var SDL_WINDOWPOS_UNDEFINED: CInt { return 0x1FFF0000 }
 private var SDL_WINDOWPOS_CENTERED: CInt { return 0x2FFF0000 }
 
-public extension Window {
+public extension SDLWindow {
         
     public enum Position: RawRepresentable {
         
@@ -133,6 +135,10 @@ public extension Window {
             }
         }
     }
+    
+}
+
+public extension SDLWindow {
     
     /// The flags on a window.
     public enum Option: UInt32, BitMaskOption {
@@ -196,6 +202,6 @@ public extension Window {
         // window should be treated as a popup menu (x11 only, >= sdl 2.0.5)
         case popupMenu = 0x00080000
         
-        public static let all: Set<Window.Option> = { fatalError("Not today") }() // FIXME
+        public static let all: Set<SDLWindow.Option> = { fatalError("Not today") }() // FIXME
     }
 }
