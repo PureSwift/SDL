@@ -11,7 +11,7 @@ public final class Renderer {
     
     // MARK: - Properties
     
-    let internalPointer: OpaquePointer
+    internal let internalPointer: OpaquePointer
     
     // MARK: - Initialization
     
@@ -20,51 +20,51 @@ public final class Renderer {
     }
     
     /// Create a 2D rendering context for a window.
-    public init?(window: Window, driver: Driver = .default, options: Set<Option> = []) {
+    public init(window: Window, driver: Driver = .default, options: BitMaskOptionSet<Renderer.Option> = []) throws {
         
-        guard let internalPointer = SDL_CreateRenderer(window.internalPointer, Int32(driver.index), options.flags)
-            else { return nil }
-        
-        self.internalPointer = internalPointer
+        let internalPointer = SDL_CreateRenderer(window.internalPointer, Int32(driver.index), options.rawValue)
+        self.internalPointer = try internalPointer.sdlThrow()
     }
     
     /// The color used for drawing operations (Rect, Line and Clear).
-    public var drawColor: (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) {
+    public func drawColor() throws -> (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) {
         
-        get {
-            var red: UInt8 = 0
-            var green: UInt8 = 0
-            var blue: UInt8 = 0
-            var alpha: UInt8 = 0
-            
-            guard SDL_GetRenderDrawColor(internalPointer, &red, &green, &blue, &alpha) >= 0
-                else { return (0,0,0,0) }
-            
-            return (red, green, blue, alpha)
-        }
+        var red: UInt8 = 0
+        var green: UInt8 = 0
+        var blue: UInt8 = 0
+        var alpha: UInt8 = 0
         
-        set {
-            
-            SDL_SetRenderDrawColor(internalPointer, newValue.red, newValue.green, newValue.blue, newValue.alpha)
-        }
+        try SDL_GetRenderDrawColor(internalPointer, &red, &green, &blue, &alpha).sdlThrow()
+        
+        return (red, green, blue, alpha)
+    }
+    
+    public func setDrawColor(_ newValue: (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)) throws {
+        
+         try SDL_SetRenderDrawColor(internalPointer, newValue.red, newValue.green, newValue.blue, newValue.alpha).sdlThrow()
     }
     
     /// Current rendering target texture.
-    public var target: Texture? {
+    public private(set) var target: SDL.Texture?
+    
+    public func setTarget(_ newValue: SDL.Texture?) throws {
         
-        didSet { SDL_SetRenderTarget(internalPointer, target?.internalPointer) }
+        try SDL_SetRenderTarget(internalPointer, target?.internalPointer).sdlThrow()
+        
+        // hold reference
+        self.target = newValue
     }
     
     /// The blend mode used for drawing operations (Fill and Line).
-    public var drawBlendMode: BlendMode {
+    public var drawBlendMode: SDL.BlendMode {
         
         get {
             
-            var value = SDL_BlendMode(.none)
+            var value = SDL_BlendMode(0)
             
             SDL_GetRenderDrawBlendMode(internalPointer, &value)
             
-            return BlendMode(value)
+            return SDL.BlendMode(value)
         }
         
         set { SDL_SetRenderDrawBlendMode(internalPointer, SDL_BlendMode(newValue)) }
@@ -88,7 +88,7 @@ public final class Renderer {
     
     /// Copy a portion of the texture to the current rendering target.
     @discardableResult
-    public func copy(_ texture: Texture, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) -> Bool {
+    public func copy(_ texture: SDL.Texture, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) -> Bool {
         
         let sourcePointer: UnsafeMutablePointer<SDL_Rect>?
         
@@ -153,10 +153,10 @@ public extension Renderer {
         public let name: String
         
         /// Supported options.
-        public let options: Set<Option>
+        public let options: BitMaskOptionSet<Renderer.Option>
         
         /// The number of available texture formats.
-        public let formats: [PixelFormat.RawValue]
+        public let formats: [SDL.PixelFormat.Format]
         
         /// The maximimum texture size.
         public let maximumSize: (width: Int, height: Int)
@@ -164,7 +164,7 @@ public extension Renderer {
         internal init(_ info: SDL_RendererInfo) {
             
             self.name = String(cString: info.name)
-            self.options = Option.from(flags: info.flags)
+            self.options = BitMaskOptionSet<Renderer.Option>(rawValue: info.flags)
             self.maximumSize = (Int(info.max_texture_width), Int(info.max_texture_height))
             
             // copy formats array
@@ -186,7 +186,7 @@ public extension Renderer {
                            info.texture_formats.14,
                            info.texture_formats.15]
             
-            self.formats = Array(formats.prefix(formatsCount))
+            self.formats = formats.prefix(formatsCount).map { SDL.PixelFormat.Format(rawValue: $0) }
         }
     }
     
@@ -229,8 +229,8 @@ public extension SDL {
             return Renderer.Info.init(info)
         }
         
-        public subscript(bounds: Range<Index>) -> RandomAccessSlice<RenderDrivers> {
-            return RandomAccessSlice<RenderDrivers>(base: self, bounds: bounds)
+        public subscript(bounds: Range<Index>) -> Slice<RenderDrivers> {
+            return Slice<RenderDrivers>(base: self, bounds: bounds)
         }
         
         /// The start `Index`.

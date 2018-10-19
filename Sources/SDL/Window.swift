@@ -1,6 +1,6 @@
 //
 //  Window.swift
-//  SDLTests
+//  SDL
 //
 //  Created by Alsey Coleman Miller on 6/6/17.
 //
@@ -11,7 +11,7 @@ public final class Window {
     
     // MARK: - Properties
     
-    let internalPointer: OpaquePointer
+    internal let internalPointer: OpaquePointer
     
     // MARK: - Initialization
     
@@ -22,7 +22,7 @@ public final class Window {
     /// Create a window with the specified position, dimensions, and flags.
     public init?(title: String, frame: (x: Position, y: Position, width: Int, height: Int), options: Set<Option> = []) {
         
-        guard let internalPointer = SDL_CreateWindow(title, frame.x.rawValue, frame.y.rawValue, Int32(frame.width), Int32(frame.height), options.flags)
+        guard let internalPointer = SDL_CreateWindow(title, frame.x.rawValue, frame.y.rawValue, Int32(frame.width), Int32(frame.height), options.rawValue)
             else { return nil }
         
         self.internalPointer = internalPointer

@@ -7,9 +7,9 @@ public struct SDL {
     /// You should specify the subsystems which you will be using in your application
     ///
     /// - Note: This must be called before using most other SDL functions.
-    public static func initialize(subSystems: Set<SubSystem>) -> Bool {
+    public static func initialize(subSystems: BitMaskOptionSet<SubSystem>) throws {
                 
-        return SDL_Init(subSystems.flags) >= 0
+        try SDL_Init(subSystems.rawValue).sdlThrow()
     }
     
     /// Cleans up all initialized subsystems.
@@ -21,18 +21,9 @@ public struct SDL {
     }
     
     /// Cleans up specific SDL subsystems
-    public static func quit(subSystems: Set<SubSystem>) {
+    public static func quit(subSystems: BitMaskOptionSet<SubSystem>) {
         
-        return SDL_QuitSubSystem(subSystems.flags)
-    }
-    
-    /// Get a string descripbing the current error.
-    public static var errorDescription: String? {
-        
-        guard let cString = SDL_GetError()
-            else { return nil }
-        
-        return String(cString: cString)
+        return SDL_QuitSubSystem(subSystems.rawValue)
     }
 }
 

@@ -7,7 +7,14 @@
 
 import CSDL2
 
-public final class Palette {
+public extension SDL {
+    
+    /// SDL Pallette
+    public typealias Palette = SDLPalette
+}
+
+/// SDL Pallette
+public final class SDLPalette {
     
     // MARK: - Properties
     
@@ -19,16 +26,16 @@ public final class Palette {
         SDL_FreePalette(internalPointer)
     }
     
-    public init?(numberOfColors: Int) {
+    /// Create a palette structure with the specified number of color entries.
+    public init(numberOfColors: Int) throws {
         
-        guard let internalFormat = SDL_AllocPalette(Int32(numberOfColors))
-            else { return nil }
-        
-        self.internalPointer = internalFormat
+        let internalFormat = SDL_AllocPalette(Int32(numberOfColors))
+        self.internalPointer = try internalFormat.sdlThrow()
     }
     
     // MARK: - Accessors
     
+    /// Number of color entries in palette.
     public var numberOfColors: Int {
         
         return Int(internalPointer.pointee.ncolors)

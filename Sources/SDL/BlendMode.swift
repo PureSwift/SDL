@@ -5,13 +5,15 @@
 //  Created by Alsey Coleman Miller on 6/8/17.
 //
 
-import struct CSDL2.SDL_BlendMode
+import CSDL2
+
+public extension SDL {
+    
+    public typealias BlendMode = SDLBlendMode
+}
 
 // An enumeration of blend modes used in `Renderer.copy()` and drawing operations.
-public enum BlendMode: UInt32 {
-    
-    /// No blending
-    case none = 0x00000000
+public enum SDLBlendMode: UInt32, BitMaskOption {
     
     /// Alpha blending
     case alpha = 0x00000001
@@ -21,9 +23,11 @@ public enum BlendMode: UInt32 {
     
     /// Color modulate
     case modulate = 0x00000004
+    
+    public static let all: Set<SDLBlendMode> = [.alpha, .additive, .modulate]
 }
 
-public extension BlendMode {
+public extension SDLBlendMode {
     
     public init(_ sdl: SDL_BlendMode) {
         
@@ -33,7 +37,7 @@ public extension BlendMode {
 
 public extension SDL_BlendMode {
     
-    public init(_ blendMode: BlendMode) {
+    public init(_ blendMode: SDLBlendMode) {
         
         self.init(rawValue: blendMode.rawValue)
     }

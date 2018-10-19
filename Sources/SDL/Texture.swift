@@ -7,7 +7,14 @@
 
 import CSDL2
 
-public final class Texture {
+public extension SDL {
+    
+    /// SDL Texture
+    public typealias Texture = SDLTexture
+}
+
+/// SDL Texture
+public final class SDLTexture {
     
     // MARK: - Properties
     
@@ -28,85 +35,55 @@ public final class Texture {
     /// - Parameter height: The height of the texture in pixels.
     /// - Returns: The created texture is returned, or `nil` if no rendering context
     /// was active, the format was unsupported, or the width or height were out of range.
-    public init?(renderer: Renderer, format: PixelFormat.RawValue, access: Access, width: Int, height: Int) {
+    public init(renderer: Renderer, format: SDL.PixelFormat.Format, access: Access, width: Int, height: Int) throws {
         
-        guard let internalPointer = SDL_CreateTexture(renderer.internalPointer,
-                                                      format,
+        let internalPointer = SDL_CreateTexture(renderer.internalPointer,
+                                                      format.rawValue,
                                                       access.rawValue,
                                                       Int32(width),
                                                       Int32(height))
-            else { return nil }
         
-        self.internalPointer = internalPointer
+        self.internalPointer = try internalPointer.sdlThrow()
     }
     
     /// Create a texture from an existing surface.
     /// - Parameter renderer: The renderer.
     /// - Parameter surface: The surface containing pixel data used to fill the texture.
     /// - Returns: The created texture is returned, or `nil` on error.
-    public init?(renderer: Renderer, surface: Surface) {
+    public init(renderer: Renderer, surface: Surface) throws {
         
-        guard let internalPointer = SDL_CreateTextureFromSurface(renderer.internalPointer, surface.internalPointer)
-            else { return nil }
-        
-        self.internalPointer = internalPointer
+        let internalPointer = SDL_CreateTextureFromSurface(renderer.internalPointer, surface.internalPointer)
+        self.internalPointer = try internalPointer.sdlThrow()
     }
     
     // MARK: - Accessors
     
-    public var format: PixelFormat.RawValue {
+    public func attributes() throws -> Attributes {
         
-        var value = UInt32()
+        var format = UInt32()
+        var access = Int32()
+        var width = Int32()
+        var height = Int32()
         
-        guard SDL_QueryTexture(internalPointer, &value, nil, nil, nil) >= 0
-            else { return 0 }
+        try SDL_QueryTexture(internalPointer, &format, &access, &width, &height).sdlThrow()
         
-        return value
-    }
-    
-    public var access: Access {
-        
-        var value = Int32()
-        
-        guard SDL_QueryTexture(internalPointer, nil, &value, nil, nil) >= 0
-            else { return .static }
-        
-        return Access(rawValue: value)!
-    }
-    
-    public var width: Int {
-        
-        var value = Int32()
-        
-        guard SDL_QueryTexture(internalPointer, nil, nil, &value, nil) >= 0
-            else { return 0 }
-        
-        return Int(value)
-    }
-    
-    public var height: Int {
-        
-        var value = Int32()
-        
-        guard SDL_QueryTexture(internalPointer, nil, nil, nil, &value) >= 0
-            else { return 0 }
-        
-        return Int(value)
+        return Attributes(format: SDL.PixelFormat.Format(rawValue: format),
+                          access: SDL.Texture.Access(rawValue: access)!,
+                          width: Int(width),
+                          height: Int(height))
     }
     
     /// The blend mode used for texture copy operations.
-    public var blendMode: BlendMode {
+    public func blendMode() throws -> SDL.BlendMode {
         
-        get {
-            
-            var value = SDL_BlendMode(.none)
-            
-            SDL_GetTextureBlendMode(internalPointer, &value)
-            
-            return BlendMode(value)
-        }
+        var value = SDL_BlendMode(0)
+        try SDL_GetTextureBlendMode(internalPointer, &value).sdlThrow()
+        return SDL.BlendMode(value)
+    }
+    
+    public func setBlendMode(_ newValue: SDL.BlendMode) throws {
         
-        set { SDL_SetTextureBlendMode(internalPointer, SDL_BlendMode(newValue)) }
+        try SDL_SetTextureBlendMode(internalPointer, SDL_BlendMode(newValue)).sdlThrow()
     }
     
     // MARK: - Methods
@@ -154,7 +131,7 @@ public final class Texture {
     }
 }
 
-public extension Texture {
+public extension SDLTexture {
     
     public enum Access: Int32 {
         
@@ -166,5 +143,20 @@ public extension Texture {
         
         /// Texture can be used as a render target
         case target
+    }
+}
+
+public extension SDLTexture {
+    
+    /// SDL Texture Attributes
+    public struct Attributes {
+        
+        public let format: SDL.PixelFormat.Format
+        
+        public let access: SDL.Texture.Access
+        
+        public let width: Int
+        
+        public let height: Int
     }
 }

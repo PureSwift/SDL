@@ -7,9 +7,14 @@
 
 import CSDL2
 
-public final class PixelFormat: RawRepresentable {
+public extension SDL {
     
-    public typealias RawValue = UInt32
+    /// SDL Pixel Format
+    public typealias PixelFormat = SDLPixelFormat
+}
+
+/// SDL Pixel Format
+public final class SDLPixelFormat {
     
     // MARK: - Properties
     
@@ -22,42 +27,61 @@ public final class PixelFormat: RawRepresentable {
         SDL_FreeFormat(internalPointer)
     }
     
-    public init?(rawValue: RawValue) {
+    /// Creates a new Pixel Format.
+    ///
+    /// -Note: Returned structure may come from a shared global cache (i.e. not newly allocated), and hence should not be modified, especially the palette. Weird errors such as `Blit combination not supported` may occur.
+    public init(format: Format) throws {
         
-        guard let internalFormat = SDL_AllocFormat(rawValue)
-            else { return nil }
-        
-        self.internalPointer = internalFormat
+        let internalFormat = SDL_AllocFormat(format.rawValue)
+        self.internalPointer = try internalFormat.sdlThrow()
     }
     
     // MARK: - Accessors
     
-    public var rawValue: RawValue {
+    /// Pixel format
+    public var format: Format {
         
-        return internalPointer.pointee.format
-    }
-    
-    public var name: String {
-        
-        return PixelFormat.name(for: self.internalPointer.pointee.format) ?? ""
-    }
-    
-    // MARK: - Class Methods
-    
-    @inline(__always)
-    public static func name(for rawValue: UInt32) -> String? {
-        
-        guard let cString = SDL_GetPixelFormatName(rawValue)
-            else { return nil }
-        
-        return String(cString: cString)
+        return Format(rawValue: internalPointer.pointee.format)
     }
     
     // MARK: - Methods
     
     /// Set the palette for a pixel format structure
-    public func setPalette(_ palette: Palette) -> Bool {
+    public func setPalette(_ palette: SDLPalette) throws {
         
-        return SDL_SetPixelFormatPalette(internalPointer, palette.internalPointer) >= 0
+        try SDL_SetPixelFormatPalette(internalPointer, palette.internalPointer).sdlThrow()
+    }
+}
+
+// MARK: - Supporting Types
+
+public extension SDL.PixelFormat {
+    
+    /// SDL Pixel Format Enum
+    public struct Format: RawRepresentable {
+        
+        public let rawValue: UInt32
+        
+        public init(rawValue: UInt32) {
+            
+            self.rawValue = rawValue
+        }
+    }
+}
+
+extension SDL.PixelFormat.Format: ExpressibleByIntegerLiteral {
+    
+    public init(integerLiteral value: UInt32) {
+        
+        self.init(rawValue: value)
+    }
+}
+
+extension SDL.PixelFormat.Format: CustomStringConvertible {
+    
+    /// Get the human readable name of a pixel format.
+    public var description: String {
+        
+        return String(cString: SDL_GetPixelFormatName(rawValue))
     }
 }
