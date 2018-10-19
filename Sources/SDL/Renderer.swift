@@ -7,7 +7,7 @@
 
 import CSDL2
 
-public final class Renderer {
+public final class SDLRenderer {
     
     // MARK: - Properties
     
@@ -20,7 +20,7 @@ public final class Renderer {
     }
     
     /// Create a 2D rendering context for a window.
-    public init(window: Window, driver: Driver = .default, options: BitMaskOptionSet<Renderer.Option> = []) throws {
+    public init(window: SDLWindow, driver: Driver = .default, options: BitMaskOptionSet<SDLRenderer.Option> = []) throws {
         
         let internalPointer = SDL_CreateRenderer(window.internalPointer, Int32(driver.index), options.rawValue)
         self.internalPointer = try internalPointer.sdlThrow()
@@ -126,7 +126,7 @@ public final class Renderer {
 
 // MARK: - Supporting Types
 
-public extension Renderer {
+public extension SDLRenderer {
     
     /// An enumeration of flags used when creating a rendering context.
     public enum Option: UInt32, BitMaskOption {
@@ -143,7 +143,7 @@ public extension Renderer {
         /// The renderer supports rendering to texture
         case targetTexture = 0x00000008
         
-        public static let all: Set<Option> = [.software, .accelerated, .presentVsync, .targetTexture]
+        public static let all: Set<SDLRenderer.Option> = [.software, .accelerated, .presentVsync, .targetTexture]
     }
     
     /// Information on the capabilities of a render driver or context.
@@ -153,7 +153,7 @@ public extension Renderer {
         public let name: String
         
         /// Supported options.
-        public let options: BitMaskOptionSet<Renderer.Option>
+        public let options: BitMaskOptionSet<SDLRenderer.Option>
         
         /// The number of available texture formats.
         public let formats: [SDL.PixelFormat.Format]
@@ -164,7 +164,7 @@ public extension Renderer {
         internal init(_ info: SDL_RendererInfo) {
             
             self.name = String(cString: info.name)
-            self.options = BitMaskOptionSet<Renderer.Option>(rawValue: info.flags)
+            self.options = BitMaskOptionSet<SDLRenderer.Option>(rawValue: info.flags)
             self.maximumSize = (Int(info.max_texture_width), Int(info.max_texture_height))
             
             // copy formats array
@@ -194,7 +194,7 @@ public extension Renderer {
         
         public static var all: [Driver] {
             
-            let drivers = SDL.RenderDrivers()
+            let drivers = SDLRenderDrivers()
             
             return drivers.indices.map { Driver(index: $0) }
         }
@@ -205,56 +205,56 @@ public extension Renderer {
     }
 }
 
-public extension SDL {
+/// SDL Render Drivers (singleton)
+public struct SDLRenderDrivers: RandomAccessCollection {
     
-    public struct RenderDrivers: RandomAccessCollection {
+    public typealias Element = SDLRenderer.Info
+    public typealias Index = Int
+    
+    public init() { } // accesses global memory, takes no space on stack
+    
+    public var count: Int {
         
-        public typealias Element = Renderer.Info
-        public typealias Index = Int
+        return Int(SDL_GetNumRenderDrivers())
+    }
+    
+    public subscript (index: Index) -> Element {
         
-        public init() { } // accesses global memory, takes no space on stack
+        var info = SDL_RendererInfo()
         
-        public var count: Int {
-            
-            return Int(SDL_GetNumRenderDrivers())
-        }
+        guard SDL_GetRenderDriverInfo(Int32(index), &info) >= 0
+            else { fatalError("Invalid index \(index)") }
         
-        public subscript (index: Index) -> Element {
-            
-            var info = SDL_RendererInfo()
-            
-            guard SDL_GetRenderDriverInfo(Int32(index), &info) >= 0
-                else { fatalError("Invalid index \(index)") }
-            
-            return Renderer.Info.init(info)
-        }
-        
-        public subscript(bounds: Range<Index>) -> Slice<RenderDrivers> {
-            return Slice<RenderDrivers>(base: self, bounds: bounds)
-        }
-        
-        /// The start `Index`.
-        public var startIndex: Index {
-            return 0
-        }
-        
-        /// The end `Index`.
-        ///
-        /// This is the "one-past-the-end" position, and will always be equal to the `count`.
-        public var endIndex: Index {
-            return count
-        }
-        
-        public func index(before i: Index) -> Index {
-            return i - 1
-        }
-        
-        public func index(after i: Index) -> Index {
-            return i + 1
-        }
-        
-        public func makeIterator() -> IndexingIterator<RenderDrivers> {
-            return IndexingIterator(_elements: self)
-        }
+        return SDLRenderer.Info.init(info)
+    }
+    
+    public subscript(bounds: Range<Index>) -> Slice<SDLRenderDrivers> {
+        return Slice<SDLRenderDrivers>(base: self, bounds: bounds)
+    }
+    
+    /// The start `Index`.
+    public var startIndex: Index {
+        return 0
+    }
+    
+    /// The end `Index`.
+    ///
+    /// This is the "one-past-the-end" position, and will always be equal to the `count`.
+    public var endIndex: Index {
+        return count
+    }
+    
+    public func index(before i: Index) -> Index {
+        return i - 1
+    }
+    
+    public func index(after i: Index) -> Index {
+        return i + 1
+    }
+    
+    public func makeIterator() -> IndexingIterator<SDLRenderDrivers> {
+        return IndexingIterator(_elements: self)
     }
 }
+
+

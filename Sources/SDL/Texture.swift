@@ -35,7 +35,7 @@ public final class SDLTexture {
     /// - Parameter height: The height of the texture in pixels.
     /// - Returns: The created texture is returned, or `nil` if no rendering context
     /// was active, the format was unsupported, or the width or height were out of range.
-    public init(renderer: Renderer, format: SDL.PixelFormat.Format, access: Access, width: Int, height: Int) throws {
+    public init(renderer: SDLRenderer, format: SDL.PixelFormat.Format, access: Access, width: Int, height: Int) throws {
         
         let internalPointer = SDL_CreateTexture(renderer.internalPointer,
                                                       format.rawValue,
@@ -50,7 +50,7 @@ public final class SDLTexture {
     /// - Parameter renderer: The renderer.
     /// - Parameter surface: The surface containing pixel data used to fill the texture.
     /// - Returns: The created texture is returned, or `nil` on error.
-    public init(renderer: Renderer, surface: Surface) throws {
+    public init(renderer: SDLRenderer, surface: Surface) throws {
         
         let internalPointer = SDL_CreateTextureFromSurface(renderer.internalPointer, surface.internalPointer)
         self.internalPointer = try internalPointer.sdlThrow()

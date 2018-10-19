@@ -35,7 +35,7 @@ public final class Surface {
     /// if necessary. This surface will be freed when the window is destroyed.
     /// - Returns: The window's framebuffer surface, or `nil` on error.
     /// - Note: You may not combine this with 3D or the rendering API on this window.
-    public init?(window: Window) {
+    public init?(window: SDLWindow) {
         
         guard let internalPointer = SDL_GetWindowSurface(window.internalPointer)
             else { return nil }

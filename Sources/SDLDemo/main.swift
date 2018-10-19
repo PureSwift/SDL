@@ -2,7 +2,7 @@ import CSDL2
 import SDL
 
 print("All Render Drivers:")
-let renderDrivers = SDL.RenderDrivers()
+let renderDrivers = SDLRenderDrivers()
 renderDrivers.forEach { dump($0) }
 
 func main() throws {
@@ -24,8 +24,8 @@ func main() throws {
     print("Running at \(framesPerSecond) FPS")
     
     // renderer
-    let renderer = Renderer(window: window).sdlUnwrap
-    renderer.drawColor = (0xFF, 0xFF, 0xFF, 0xFF)
+    let renderer = try SDLRenderer(window: window)
+    try renderer.setDrawColor((0xFF, 0xFF, 0xFF, 0xFF))
     
     var frame = 0
     
