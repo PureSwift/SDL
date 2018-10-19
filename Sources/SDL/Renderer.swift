@@ -25,7 +25,7 @@ public final class SDLRenderer {
                 driver: SDLRenderer.Driver = .default,
                 options: BitMaskOptionSet<SDLRenderer.Option> = []) throws {
         
-        let internalPointer = SDL_CreateRenderer(window.internalPointer, Int32(driver.index), options.rawValue)
+        let internalPointer = SDL_CreateRenderer(window.internalPointer, Int32(driver.rawValue), options.rawValue)
         self.internalPointer = try internalPointer.sdlThrow()
     }
     
@@ -148,6 +148,10 @@ public extension SDLRenderer {
         public static let all: Set<SDLRenderer.Option> = [.software, .accelerated, .presentVsync, .targetTexture]
     }
     
+}
+
+public extension SDLRenderer {
+    
     /// Information on the capabilities of a render driver or context.
     public struct Info {
         
@@ -162,6 +166,15 @@ public extension SDLRenderer {
         
         /// The maximimum texture size.
         public let maximumSize: (width: Int, height: Int)
+        
+        public init(driver: Driver) throws {
+            
+            // get driver info from SDL
+            var info = SDL_RendererInfo()
+            try SDL_GetRenderDriverInfo(Int32(driver.rawValue), &info).sdlThrow()
+            
+            self.init(info)
+        }
         
         internal init(_ info: SDL_RendererInfo) {
             
@@ -191,72 +204,25 @@ public extension SDLRenderer {
             self.formats = formats.prefix(formatsCount).map { SDLPixelFormat.Format(rawValue: $0) }
         }
     }
+}
+
+public extension SDLRenderer {
     
-    public struct Driver {
+    public struct Driver: IndexRepresentable {
         
-        public static var all: [Driver] {
+        public static var all: CountableSet<Driver> {
             
-            let drivers = SDLRenderDrivers()
-            
-            return drivers.indices.map { Driver(index: $0) }
+            let count = Int(SDL_GetNumRenderDrivers())
+            return CountableSet<Driver>(count: count)
         }
         
-        public static let `default` = Driver(index: -1)
+        public static let `default` = Driver(rawValue: -1)
         
-        public let index: Int
+        public let rawValue: Int
+        
+        public init(rawValue: Int) {
+            
+            self.rawValue = rawValue
+        }
     }
 }
-
-/// SDL Render Drivers (singleton)
-public struct SDLRenderDrivers: RandomAccessCollection {
-    
-    public typealias Element = SDLRenderer.Info
-    public typealias Index = Int
-    
-    public init() { } // accesses global heap memory, takes no space on stack
-    
-    public var count: Int {
-        
-        return Int(SDL_GetNumRenderDrivers())
-    }
-    
-    public subscript (index: Index) -> Element {
-        
-        var info = SDL_RendererInfo()
-        
-        guard SDL_GetRenderDriverInfo(Int32(index), &info) >= 0
-            else { fatalError("Invalid index \(index)") }
-        
-        return SDLRenderer.Info.init(info)
-    }
-    
-    public subscript(bounds: Range<Index>) -> Slice<SDLRenderDrivers> {
-        return Slice<SDLRenderDrivers>(base: self, bounds: bounds)
-    }
-    
-    /// The start `Index`.
-    public var startIndex: Index {
-        return 0
-    }
-    
-    /// The end `Index`.
-    ///
-    /// This is the "one-past-the-end" position, and will always be equal to the `count`.
-    public var endIndex: Index {
-        return count
-    }
-    
-    public func index(before i: Index) -> Index {
-        return i - 1
-    }
-    
-    public func index(after i: Index) -> Index {
-        return i + 1
-    }
-    
-    public func makeIterator() -> IndexingIterator<SDLRenderDrivers> {
-        return IndexingIterator(_elements: self)
-    }
-}
-
-
