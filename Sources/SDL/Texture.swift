@@ -44,7 +44,7 @@ public final class SDLTexture {
     /// - Parameter renderer: The renderer.
     /// - Parameter surface: The surface containing pixel data used to fill the texture.
     /// - Returns: The created texture is returned, or `nil` on error.
-    public init(renderer: SDLRenderer, surface: Surface) throws {
+    public init(renderer: SDLRenderer, surface: SDLSurface) throws {
         
         let internalPointer = SDL_CreateTextureFromSurface(renderer.internalPointer, surface.internalPointer)
         self.internalPointer = try internalPointer.sdlThrow()

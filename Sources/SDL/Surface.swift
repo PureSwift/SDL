@@ -1,17 +1,18 @@
 //
 //  Surface.swift
-//  SDLTests
+//  SDL
 //
 //  Created by Alsey Coleman Miller on 6/6/17.
 //
 
 import CSDL2
 
-public final class Surface {
+/// SDL Surface
+public final class SDLSurface {
     
     // MARK: - Properties
     
-    let internalPointer: UnsafeMutablePointer<SDL_Surface>
+    internal let internalPointer: UnsafeMutablePointer<SDL_Surface>
     
     // MARK: - Initialization
     
@@ -19,14 +20,13 @@ public final class Surface {
         SDL_FreeSurface(internalPointer)
     }
     
-    public init?(rgb size: (width: Int, height: Int),
+    public init(rgb size: (width: Int, height: Int),
                  depth: Int = 32,
-                 mask: (red: UInt, green: UInt, blue: UInt, alpha: UInt) = (0,0,0,0)) {
+                 mask: (red: UInt, green: UInt, blue: UInt, alpha: UInt) = (0,0,0,0)) throws {
         
-        guard let internalPointer = SDL_CreateRGBSurface(0, CInt(size.width), CInt(size.height), CInt(depth), CUnsignedInt(mask.red), CUnsignedInt(mask.green), CUnsignedInt(mask.blue), CUnsignedInt(mask.alpha))
-            else { return nil }
+        let internalPointer = SDL_CreateRGBSurface(0, CInt(size.width), CInt(size.height), CInt(depth), CUnsignedInt(mask.red), CUnsignedInt(mask.green), CUnsignedInt(mask.blue), CUnsignedInt(mask.alpha))
         
-        self.internalPointer = internalPointer
+        self.internalPointer = try internalPointer.sdlThrow()
     }
     
     // Get the SDL surface associated with the window.
@@ -108,7 +108,7 @@ public final class Surface {
         SDL_UnlockSurface(internalPointer)
     }
     
-    public func blit(to surface: Surface, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) throws {
+    public func blit(to surface: SDLSurface, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) throws {
         
         // TODO rects
         try SDL_UpperBlit(self.internalPointer, nil, surface.internalPointer, nil).sdlThrow()

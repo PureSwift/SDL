@@ -213,7 +213,7 @@ public struct SDLRenderDrivers: RandomAccessCollection {
     public typealias Element = SDLRenderer.Info
     public typealias Index = Int
     
-    public init() { } // accesses global memory, takes no space on stack
+    public init() { } // accesses global heap memory, takes no space on stack
     
     public var count: Int {
         
