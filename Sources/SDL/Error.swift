@@ -7,11 +7,6 @@
 
 import CSDL2
 
-public extension SDL {
-    
-    public typealias Error = SDLError
-}
-
 /// SDL Error
 public struct SDLError: CustomStringConvertible, Swift.Error {
     

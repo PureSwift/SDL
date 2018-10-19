@@ -7,11 +7,6 @@
 
 import CSDL2
 
-public extension SDL {
-    
-    public typealias BlendMode = SDLBlendMode
-}
-
 // An enumeration of blend modes used in `Renderer.copy()` and drawing operations.
 public enum SDLBlendMode: UInt32, BitMaskOption {
     
@@ -25,20 +20,4 @@ public enum SDLBlendMode: UInt32, BitMaskOption {
     case modulate = 0x00000004
     
     public static let all: Set<SDLBlendMode> = [.alpha, .additive, .modulate]
-}
-
-public extension SDLBlendMode {
-    
-    public init(_ sdl: SDL_BlendMode) {
-        
-        self.init(rawValue: sdl.rawValue)!
-    }
-}
-
-public extension SDL_BlendMode {
-    
-    public init(_ blendMode: SDLBlendMode) {
-        
-        self.init(rawValue: blendMode.rawValue)
-    }
 }

@@ -7,12 +7,6 @@
 
 import CSDL2
 
-public extension SDL {
-    
-    /// SDL Pixel Format
-    public typealias PixelFormat = SDLPixelFormat
-}
-
 /// SDL Pixel Format
 public final class SDLPixelFormat {
     
@@ -30,7 +24,7 @@ public final class SDLPixelFormat {
     /// Creates a new Pixel Format.
     ///
     /// -Note: Returned structure may come from a shared global cache (i.e. not newly allocated), and hence should not be modified, especially the palette. Weird errors such as `Blit combination not supported` may occur.
-    public init(format: Format) throws {
+    public init(format: SDLPixelFormat.Format) throws {
         
         let internalFormat = SDL_AllocFormat(format.rawValue)
         self.internalPointer = try internalFormat.sdlThrow()
@@ -39,7 +33,7 @@ public final class SDLPixelFormat {
     // MARK: - Accessors
     
     /// Pixel format
-    public var format: Format {
+    public var format: SDLPixelFormat.Format {
         
         return Format(rawValue: internalPointer.pointee.format)
     }
@@ -55,7 +49,7 @@ public final class SDLPixelFormat {
 
 // MARK: - Supporting Types
 
-public extension SDL.PixelFormat {
+public extension SDLPixelFormat {
     
     /// SDL Pixel Format Enum
     public struct Format: RawRepresentable {
@@ -69,7 +63,7 @@ public extension SDL.PixelFormat {
     }
 }
 
-extension SDL.PixelFormat.Format: ExpressibleByIntegerLiteral {
+extension SDLPixelFormat.Format: ExpressibleByIntegerLiteral {
     
     public init(integerLiteral value: UInt32) {
         
@@ -77,7 +71,7 @@ extension SDL.PixelFormat.Format: ExpressibleByIntegerLiteral {
     }
 }
 
-extension SDL.PixelFormat.Format: CustomStringConvertible {
+extension SDLPixelFormat.Format: CustomStringConvertible {
     
     /// Get the human readable name of a pixel format.
     public var description: String {

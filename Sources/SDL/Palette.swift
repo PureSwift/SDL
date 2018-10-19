@@ -7,12 +7,6 @@
 
 import CSDL2
 
-public extension SDL {
-    
-    /// SDL Pallette
-    public typealias Palette = SDLPalette
-}
-
 /// SDL Pallette
 public final class SDLPalette {
     

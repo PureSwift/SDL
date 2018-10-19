@@ -7,6 +7,7 @@
 
 import CSDL2
 
+/// SDL Renderer
 public final class SDLRenderer {
     
     // MARK: - Properties
@@ -20,7 +21,9 @@ public final class SDLRenderer {
     }
     
     /// Create a 2D rendering context for a window.
-    public init(window: SDLWindow, driver: Driver = .default, options: BitMaskOptionSet<SDLRenderer.Option> = []) throws {
+    public init(window: SDLWindow,
+                driver: SDLRenderer.Driver = .default,
+                options: BitMaskOptionSet<SDLRenderer.Option> = []) throws {
         
         let internalPointer = SDL_CreateRenderer(window.internalPointer, Int32(driver.index), options.rawValue)
         self.internalPointer = try internalPointer.sdlThrow()
@@ -45,9 +48,9 @@ public final class SDLRenderer {
     }
     
     /// Current rendering target texture.
-    public private(set) var target: SDL.Texture?
+    public private(set) var target: SDLTexture?
     
-    public func setTarget(_ newValue: SDL.Texture?) throws {
+    public func setTarget(_ newValue: SDLTexture?) throws {
         
         try SDL_SetRenderTarget(internalPointer, target?.internalPointer).sdlThrow()
         
@@ -56,28 +59,28 @@ public final class SDLRenderer {
     }
     
     /// The blend mode used for drawing operations (Fill and Line).
-    public var drawBlendMode: SDL.BlendMode {
+    public func drawBlendMode() throws -> BitMaskOptionSet<SDLBlendMode> {
         
-        get {
-            
-            var value = SDL_BlendMode(0)
-            
-            SDL_GetRenderDrawBlendMode(internalPointer, &value)
-            
-            return SDL.BlendMode(value)
-        }
+        var value = SDL_BlendMode(0)
+        SDL_GetRenderDrawBlendMode(internalPointer, &value)
+        return BitMaskOptionSet<SDLBlendMode>(rawValue: value.rawValue)
+    }
+    
+    /// Set the blend mode used for drawing operations (Fill and Line).
+    ///
+    /// - Note: If the blend mode is not supported, the closest supported mode is chosen.
+    public func setDrawBlendMode(_ newValue: BitMaskOptionSet<SDLBlendMode>) throws {
         
-        set { SDL_SetRenderDrawBlendMode(internalPointer, SDL_BlendMode(newValue)) }
+        try SDL_SetRenderDrawBlendMode(internalPointer, SDL_BlendMode(newValue.rawValue)).sdlThrow()
     }
     
     // MARK: - Methods
     
     /// Clear the current rendering target with the drawing color
     /// This function clears the entire rendering target, ignoring the viewport.
-    @discardableResult
-    public func clear() -> Bool {
+    public func clear() throws {
         
-        return SDL_RenderClear(internalPointer) >= 0
+        try SDL_RenderClear(internalPointer).sdlThrow()
     }
     
     /// Update the screen with rendering performed.
@@ -87,8 +90,7 @@ public final class SDLRenderer {
     }
     
     /// Copy a portion of the texture to the current rendering target.
-    @discardableResult
-    public func copy(_ texture: SDL.Texture, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) -> Bool {
+    public func copy(_ texture: SDLTexture, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) throws {
         
         let sourcePointer: UnsafeMutablePointer<SDL_Rect>?
         
@@ -120,7 +122,7 @@ public final class SDLRenderer {
             destinationPointer = nil
         }
         
-        return SDL_RenderCopy(internalPointer, texture.internalPointer, sourcePointer, destinationPointer) >= 0
+        try SDL_RenderCopy(internalPointer, texture.internalPointer, sourcePointer, destinationPointer).sdlThrow()
     }
 }
 
@@ -156,7 +158,7 @@ public extension SDLRenderer {
         public let options: BitMaskOptionSet<SDLRenderer.Option>
         
         /// The number of available texture formats.
-        public let formats: [SDL.PixelFormat.Format]
+        public let formats: [SDLPixelFormat.Format]
         
         /// The maximimum texture size.
         public let maximumSize: (width: Int, height: Int)
@@ -186,7 +188,7 @@ public extension SDLRenderer {
                            info.texture_formats.14,
                            info.texture_formats.15]
             
-            self.formats = formats.prefix(formatsCount).map { SDL.PixelFormat.Format(rawValue: $0) }
+            self.formats = formats.prefix(formatsCount).map { SDLPixelFormat.Format(rawValue: $0) }
         }
     }
     

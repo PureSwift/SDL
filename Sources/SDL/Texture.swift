@@ -7,12 +7,6 @@
 
 import CSDL2
 
-public extension SDL {
-    
-    /// SDL Texture
-    public typealias Texture = SDLTexture
-}
-
 /// SDL Texture
 public final class SDLTexture {
     
@@ -35,7 +29,7 @@ public final class SDLTexture {
     /// - Parameter height: The height of the texture in pixels.
     /// - Returns: The created texture is returned, or `nil` if no rendering context
     /// was active, the format was unsupported, or the width or height were out of range.
-    public init(renderer: SDLRenderer, format: SDL.PixelFormat.Format, access: Access, width: Int, height: Int) throws {
+    public init(renderer: SDLRenderer, format: SDLPixelFormat.Format, access: Access, width: Int, height: Int) throws {
         
         let internalPointer = SDL_CreateTexture(renderer.internalPointer,
                                                       format.rawValue,
@@ -67,23 +61,24 @@ public final class SDLTexture {
         
         try SDL_QueryTexture(internalPointer, &format, &access, &width, &height).sdlThrow()
         
-        return Attributes(format: SDL.PixelFormat.Format(rawValue: format),
-                          access: SDL.Texture.Access(rawValue: access)!,
+        return Attributes(format: SDLPixelFormat.Format(rawValue: format),
+                          access: SDLTexture.Access(rawValue: access)!,
                           width: Int(width),
                           height: Int(height))
     }
     
     /// The blend mode used for texture copy operations.
-    public func blendMode() throws -> SDL.BlendMode {
+    public func blendMode() throws -> BitMaskOptionSet<SDLBlendMode> {
         
         var value = SDL_BlendMode(0)
         try SDL_GetTextureBlendMode(internalPointer, &value).sdlThrow()
-        return SDL.BlendMode(value)
+        return BitMaskOptionSet<SDLBlendMode>(rawValue: value.rawValue)
     }
     
-    public func setBlendMode(_ newValue: SDL.BlendMode) throws {
+    /// Set the blend mode used for texture copy operations.
+    public func setBlendMode(_ newValue: BitMaskOptionSet<SDLBlendMode>) throws {
         
-        try SDL_SetTextureBlendMode(internalPointer, SDL_BlendMode(newValue)).sdlThrow()
+        try SDL_SetTextureBlendMode(internalPointer, SDL_BlendMode(newValue.rawValue)).sdlThrow()
     }
     
     // MARK: - Methods
@@ -117,6 +112,7 @@ public final class SDLTexture {
         
         var pixels: UnsafeMutableRawPointer? = nil
         
+        /// must be SDL_TEXTUREACCESS_STREAMING or throws
         try SDL_LockTexture(internalPointer, rectPointer, &pixels, &pitch).sdlThrow()
         
         defer { SDL_UnlockTexture(internalPointer) }
@@ -150,9 +146,9 @@ public extension SDLTexture {
     /// SDL Texture Attributes
     public struct Attributes {
         
-        public let format: SDL.PixelFormat.Format
+        public let format: SDLPixelFormat.Format
         
-        public let access: SDL.Texture.Access
+        public let access: SDLTexture.Access
         
         public let width: Int
         

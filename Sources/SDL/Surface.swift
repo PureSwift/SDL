@@ -35,12 +35,10 @@ public final class Surface {
     /// if necessary. This surface will be freed when the window is destroyed.
     /// - Returns: The window's framebuffer surface, or `nil` on error.
     /// - Note: You may not combine this with 3D or the rendering API on this window.
-    public init?(window: SDLWindow) {
+    public init(window: SDLWindow) throws {
         
-        guard let internalPointer = SDL_GetWindowSurface(window.internalPointer)
-            else { return nil }
-        
-        self.internalPointer = internalPointer
+        let internalPointer = SDL_GetWindowSurface(window.internalPointer)
+        self.internalPointer = try internalPointer.sdlThrow()
     }
     
     // MARK: - Accessors
@@ -70,13 +68,13 @@ public final class Surface {
     // MARK: - Methods
     
     /// Get a pointer to the data of the surface, for direct inspection or modification.
-    public func withUnsafeMutableBytes<Result>(_ body: (UnsafeMutableRawPointer) throws -> Result) rethrows -> Result? {
+    public func withUnsafeMutableBytes<Result>(_ body: (UnsafeMutableRawPointer) throws -> Result) throws -> Result? {
         
         let mustLock = self.mustLock
         
         if mustLock {
             
-            guard lock() else { return nil }
+            try lock()
         }
         
         let result = try body(internalPointer.pointee.pixels)
@@ -100,9 +98,9 @@ public final class Surface {
     ///
     /// - Note: No operating system or library calls should be made between lock/unlock pairs,
     /// as critical system locks may be held during this time.
-    internal func lock() -> Bool {
+    internal func lock() throws {
         
-        return SDL_LockSurface(internalPointer) >= 0
+        try SDL_LockSurface(internalPointer).sdlThrow()
     }
     
     internal func unlock() {
@@ -110,10 +108,9 @@ public final class Surface {
         SDL_UnlockSurface(internalPointer)
     }
     
-    @discardableResult
-    public func blit(to surface: Surface, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) -> Bool {
+    public func blit(to surface: Surface, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) throws {
         
         // TODO rects
-        return SDL_UpperBlit(self.internalPointer, nil, surface.internalPointer, nil) >= 0
+        try SDL_UpperBlit(self.internalPointer, nil, surface.internalPointer, nil).sdlThrow()
     }
 }
