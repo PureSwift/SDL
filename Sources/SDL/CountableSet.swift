@@ -1,5 +1,5 @@
 //
-//  IntegerArray.swift
+//  CountableSet.swift
 //  SDL
 //
 //  Created by Alsey Coleman Miller on 10/19/18.
@@ -14,6 +14,8 @@ public struct CountableSet <Element: IndexRepresentable>: Collection {
     public typealias Index = Int
     
     public init(count: Int) {
+        
+        precondition(count >= 0, "Invalid negative value \(count)")
         
         self.count = count
     }

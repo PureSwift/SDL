@@ -44,3 +44,43 @@ public struct SDLDisplayMode {
         return try body(internalValue.driverdata)
     }
 }
+
+public extension SDLDisplayMode {
+    
+    /// Fill in information about a specific display mode.
+    public init(display: SDLVideoDisplay, index: SDLDisplayMode.Index) throws {
+        
+        var internalValue = SDL_DisplayMode()
+        try SDL_GetDisplayMode(Int32(display.rawValue), Int32(index.rawValue), &internalValue).sdlThrow()
+        self.init(internalValue)
+    }
+}
+
+public extension SDLDisplayMode {
+    
+    public struct Index: IndexRepresentable {
+        
+        public let rawValue: Int
+        
+        public init(rawValue: Int) {
+            
+            self.rawValue = rawValue
+        }
+    }
+}
+
+public extension SDLVideoDisplay {
+    
+    /// Get the availible display modes.
+    public func modes() throws -> [SDLDisplayMode] {
+        
+        let count = SDL_GetNumDisplayModes(Int32(rawValue))
+        
+        // make sure value is valid
+        try count.sdlThrow()
+        
+        let set = CountableSet<SDLDisplayMode.Index>(count: Int(count))
+        
+        return try set.map { try SDLDisplayMode(display: self, index: $0) }
+    }
+}

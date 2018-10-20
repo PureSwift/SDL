@@ -52,7 +52,7 @@ public final class SDLPixelFormat {
 public extension SDLPixelFormat {
     
     /// SDL Pixel Format Enum
-    public struct Format: RawRepresentable {
+    public struct Format: RawRepresentable, Equatable, Hashable {
         
         public let rawValue: UInt32
         
@@ -78,4 +78,13 @@ extension SDLPixelFormat.Format: CustomStringConvertible {
         
         return String(cString: SDL_GetPixelFormatName(rawValue))
     }
+}
+
+public extension SDLPixelFormat.Format {
+    
+    /// SDL_PIXELFORMAT_INDEX1LSB
+    static let index1LSB = SDLPixelFormat.Format(rawValue: UInt32(SDL_PIXELFORMAT_INDEX1LSB))
+    
+    /// SDL_PIXELFORMAT_INDEX1MSB
+    static let index1MSB = SDLPixelFormat.Format(rawValue: UInt32(SDL_PIXELFORMAT_INDEX1MSB))
 }
