@@ -68,19 +68,3 @@ public extension SDLDisplayMode {
         }
     }
 }
-
-public extension SDLVideoDisplay {
-    
-    /// Get the availible display modes.
-    public func modes() throws -> [SDLDisplayMode] {
-        
-        let count = SDL_GetNumDisplayModes(Int32(rawValue))
-        
-        // make sure value is valid
-        try count.sdlThrow()
-        
-        let set = CountableSet<SDLDisplayMode.Index>(count: Int(count))
-        
-        return try set.map { try SDLDisplayMode(display: self, index: $0) }
-    }
-}
