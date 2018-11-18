@@ -87,4 +87,10 @@ public extension SDLPixelFormat.Format {
     
     /// SDL_PIXELFORMAT_INDEX1MSB
     static let index1MSB = SDLPixelFormat.Format(rawValue: UInt32(SDL_PIXELFORMAT_INDEX1MSB))
+    
+    /// SDL_PIXELFORMAT_ARGB32
+    static let argb32 = SDLPixelFormat.Format(rawValue: UInt32(SDL_PIXELFORMAT_ARGB32))
+    
+    /// SDL_PIXELFORMAT_ARGB8888
+    static let argb8888 = SDLPixelFormat.Format(rawValue: UInt32(SDL_PIXELFORMAT_ARGB8888))
 }
