@@ -3,8 +3,26 @@ import SDL
 
 print("All Render Drivers:")
 let renderDrivers = SDLRenderer.Driver.all
-renderDrivers.forEach {
-    dump(try! SDLRenderer.Info(driver: $0))
+if renderDrivers.isEmpty == false {
+    print("=======")
+    for driver in renderDrivers {
+        
+        do {
+            let info = try SDLRenderer.Info(driver: driver)
+            print("Driver:", driver.rawValue)
+            print("Name:", info.name)
+            print("Options:")
+            info.options.forEach { print("  \($0)") }
+            print("Formats:")
+            info.formats.forEach { print("  \($0)") }
+            print("Maximum Size:")
+            print("  Width: \(info.maximumSize.width)")
+            print("  Height: \(info.maximumSize.height)")
+            print("=======")
+        } catch {
+            print("Could not get information for driver \(driver.rawValue)")
+        }
+    }
 }
 
 func main() throws {

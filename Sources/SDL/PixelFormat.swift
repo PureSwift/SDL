@@ -63,23 +63,6 @@ public extension SDLPixelFormat {
     }
 }
 
-extension SDLPixelFormat.Format: ExpressibleByIntegerLiteral {
-    
-    public init(integerLiteral value: UInt32) {
-        
-        self.init(rawValue: value)
-    }
-}
-
-extension SDLPixelFormat.Format: CustomStringConvertible {
-    
-    /// Get the human readable name of a pixel format.
-    public var description: String {
-        
-        return String(cString: SDL_GetPixelFormatName(rawValue))
-    }
-}
-
 public extension SDLPixelFormat.Format {
     
     /// SDL_PIXELFORMAT_INDEX1LSB
@@ -93,4 +76,33 @@ public extension SDLPixelFormat.Format {
     
     /// SDL_PIXELFORMAT_ARGB8888
     static let argb8888 = SDLPixelFormat.Format(rawValue: UInt32(SDL_PIXELFORMAT_ARGB8888))
+}
+
+// MARK: - ExpressibleByIntegerLiteral
+
+extension SDLPixelFormat.Format: ExpressibleByIntegerLiteral {
+    
+    public init(integerLiteral value: UInt32) {
+        self.init(rawValue: value)
+    }
+}
+
+// MARK: - CustomStringConvertible
+
+extension SDLPixelFormat.Format: CustomStringConvertible {
+    
+    /// Get the human readable name of a pixel format.
+    public var description: String {
+        let name = debugDescription
+        return name.split(separator: "_").last.flatMap { String($0) } ?? debugDescription
+    }
+}
+
+// MARK: - CustomStringDebugConvertible
+
+extension SDLPixelFormat.Format: CustomDebugStringConvertible {
+    
+    public var debugDescription: String {
+        return String(cString: SDL_GetPixelFormatName(rawValue))
+    }
 }
