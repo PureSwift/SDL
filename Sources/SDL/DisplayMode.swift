@@ -10,7 +10,7 @@ import CSDL2
 /// SDL Display Mode
 public struct SDLDisplayMode {
     
-    @_versioned
+    @usableFromInline
     internal let internalValue: SDL_DisplayMode
     
     internal init(_ internalValue: SDL_DisplayMode) {
@@ -48,7 +48,7 @@ public struct SDLDisplayMode {
 public extension SDLDisplayMode {
     
     /// Fill in information about a specific display mode.
-    public init(display: SDLVideoDisplay, index: SDLDisplayMode.Index) throws {
+    init(display: SDLVideoDisplay, index: SDLDisplayMode.Index) throws {
         
         var internalValue = SDL_DisplayMode()
         try SDL_GetDisplayMode(Int32(display.rawValue), Int32(index.rawValue), &internalValue).sdlThrow()
@@ -58,7 +58,7 @@ public extension SDLDisplayMode {
 
 public extension SDLDisplayMode {
     
-    public struct Index: IndexRepresentable {
+    struct Index: IndexRepresentable {
         
         public let rawValue: Int
         

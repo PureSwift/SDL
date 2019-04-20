@@ -131,7 +131,7 @@ public final class SDLRenderer {
 public extension SDLRenderer {
     
     /// An enumeration of flags used when creating a rendering context.
-    public enum Option: UInt32, BitMaskOption {
+    enum Option: UInt32, BitMaskOption {
         
         /// The renderer is a software fallback.
         case software = 0x00000001
@@ -153,7 +153,7 @@ public extension SDLRenderer {
 public extension SDLRenderer {
     
     /// Information on the capabilities of a render driver or context.
-    public struct Info {
+    struct Info {
         
         /// The name of the renderer.
         public let name: String
@@ -208,7 +208,7 @@ public extension SDLRenderer {
 
 public extension SDLRenderer {
     
-    public struct Driver: IndexRepresentable {
+    struct Driver: IndexRepresentable {
         
         public static var all: CountableSet<Driver> {
             

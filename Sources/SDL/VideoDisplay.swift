@@ -34,7 +34,7 @@ public extension SDLVideoDisplay {
     ///
     /// The available display modes are scanned, and closest is filled in with the closest mode
     /// matching the requested mode and returned.
-    public func closestDisplayMode(width: Int, height: Int) -> SDLDisplayMode? {
+    func closestDisplayMode(width: Int, height: Int) -> SDLDisplayMode? {
         
         // The mode format and refresh_rate default to the desktop mode if they are 0. The modes are scanned with size being first priority, format being second priority, and finally checking the refresh_rate. If all the available modes are too small, then NULL is returned.
         
@@ -49,7 +49,7 @@ public extension SDLVideoDisplay {
     }
     
     /// Get the availible display modes.
-    public func modes() throws -> [SDLDisplayMode] {
+    func modes() throws -> [SDLDisplayMode] {
         
         let count = SDL_GetNumDisplayModes(Int32(rawValue))
         

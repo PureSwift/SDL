@@ -2,8 +2,10 @@ import CSDL2
 import SDL
 
 print("All Render Drivers:")
-let renderDrivers = SDLRenderDrivers()
-renderDrivers.forEach { dump($0) }
+let renderDrivers = SDLRenderer.Driver.all
+renderDrivers.forEach {
+    dump(try! SDLRenderer.Info(driver: $0))
+}
 
 func main() throws {
     
@@ -19,7 +21,7 @@ func main() throws {
                                frame: (x: .centered, y: .centered, width: windowSize.width, height: windowSize.height),
                                options: [.resizable, .shown])
     
-    let framesPerSecond = UInt(window.displayMode?.refresh_rate ?? 60)
+    let framesPerSecond = UInt((try? window.displayMode())?.refreshRate ?? 60)
     
     print("Running at \(framesPerSecond) FPS")
     
@@ -65,13 +67,13 @@ func main() throws {
             
             // get data for surface
             let textureSize = (width: 100, height: 100)
-            let imageSurface = Surface(rgb: textureSize, depth: 32)!
+            let imageSurface = try SDLSurface(rgb: textureSize, depth: 32)
             
-            let texture = SDL.Texture(renderer: renderer, surface: imageSurface).sdlUnwrap
+            let texture = try SDLTexture(renderer: renderer, surface: imageSurface)
             
             // render to screen
-            renderer.clear()
-            renderer.copy(texture, destination: SDL_Rect(x: 50, y: 50, w: Int32(textureSize.width), h: Int32(textureSize.height)))
+            try renderer.clear()
+            try renderer.copy(texture, destination: SDL_Rect(x: 50, y: 50, w: Int32(textureSize.width), h: Int32(textureSize.height)))
             renderer.present()
             
             print("Did redraw screen")

@@ -52,7 +52,7 @@ public final class SDLPixelFormat {
 public extension SDLPixelFormat {
     
     /// SDL Pixel Format Enum
-    public struct Format: RawRepresentable, Equatable, Hashable {
+    struct Format: RawRepresentable, Equatable, Hashable {
         
         public let rawValue: UInt32
         

@@ -64,7 +64,7 @@ public protocol IndexRepresentable: RawRepresentable, Hashable {
 
 public extension IndexRepresentable {
     
-    public var hashValue: Int {
+    var hashValue: Int {
         
         return rawValue.hashValue
     }

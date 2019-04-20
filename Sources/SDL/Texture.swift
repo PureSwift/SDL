@@ -101,12 +101,12 @@ public final class SDLTexture {
             
             rectPointer?.pointee = rect
             
-            defer { rectPointer?.deallocate() }
-            
         } else {
             
             rectPointer = nil
         }
+        
+        defer { rectPointer?.deallocate() }
         
         var pitch: Int32 = 0
         
@@ -128,7 +128,7 @@ public final class SDLTexture {
 
 public extension SDLTexture {
     
-    public enum Access: Int32 {
+    enum Access: Int32 {
         
         /// Changes rarely, not lockable.
         case `static`
@@ -144,7 +144,7 @@ public extension SDLTexture {
 public extension SDLTexture {
     
     /// SDL Texture Attributes
-    public struct Attributes {
+    struct Attributes {
         
         public let format: SDLPixelFormat.Format
         

@@ -108,7 +108,7 @@ private var SDL_WINDOWPOS_CENTERED: CInt { return 0x2FFF0000 }
 
 public extension SDLWindow {
         
-    public enum Position: RawRepresentable {
+    enum Position: RawRepresentable {
         
         case undefined
         case centered
@@ -137,7 +137,7 @@ public extension SDLWindow {
 public extension SDLWindow {
     
     /// The flags on a window.
-    public enum Option: UInt32, BitMaskOption {
+    enum Option: UInt32, BitMaskOption {
         
         /// fullscreen window
         case fullscreen = 0x00000001

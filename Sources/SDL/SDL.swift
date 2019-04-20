@@ -32,7 +32,7 @@ public struct SDL {
 public extension SDL {
     
     /// Specific SDL subsystems.
-    public enum SubSystem: UInt32, BitMaskOption {
+    enum SubSystem: UInt32, BitMaskOption {
         
         case timer = 0x00000001
         case audio = 0x00000010
