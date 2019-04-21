@@ -18,6 +18,4 @@ public enum SDLBlendMode: UInt32, BitMaskOption {
     
     /// Color modulate
     case modulate = 0x00000004
-    
-    public static let all: Set<SDLBlendMode> = [.alpha, .additive, .modulate]
 }

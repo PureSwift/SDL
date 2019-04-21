@@ -17,7 +17,6 @@ public final class SDLPixelFormat {
     // MARK: - Initialization
     
     deinit {
-        
         SDL_FreeFormat(internalPointer)
     }
     
@@ -103,6 +102,7 @@ extension SDLPixelFormat.Format: CustomStringConvertible {
     
     /// Get the human readable name of a pixel format.
     public var description: String {
+        
         let name = formatName
         return name.split(separator: "_").last.flatMap { String($0) } ?? name
     }
@@ -113,6 +113,7 @@ extension SDLPixelFormat.Format: CustomStringConvertible {
 extension SDLPixelFormat.Format: CustomDebugStringConvertible {
     
     public var debugDescription: String {
+        
         return formatName
     }
 }

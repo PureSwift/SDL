@@ -144,8 +144,6 @@ public extension SDLRenderer {
         
         /// The renderer supports rendering to texture
         case targetTexture = 0x00000008
-        
-        public static let all: Set<SDLRenderer.Option> = [.software, .accelerated, .presentVsync, .targetTexture]
     }
     
 }

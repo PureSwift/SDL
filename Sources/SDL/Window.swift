@@ -197,10 +197,5 @@ public extension SDLWindow {
         
         // window should be treated as a popup menu (x11 only, >= sdl 2.0.5)
         case popupMenu = 0x00080000
-        
-        public static let all: Set<SDLWindow.Option> = Set(
-            (Option.fullscreen.rawValue ... Option.popupMenu.rawValue)
-                .compactMap({ Option(rawValue: $0) })
-        )
     }
 }

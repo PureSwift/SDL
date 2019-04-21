@@ -41,8 +41,5 @@ public extension SDL {
         case haptic = 0x00001000
         case gameController = 0x00002000
         case events = 0x00004000
-        
-        /// All the SDL subsystems.
-        public static let all: Set<SubSystem> = [.timer, .audio, .video, .joystick, .haptic, .gameController, .events]
     }
 }
