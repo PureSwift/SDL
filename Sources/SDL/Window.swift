@@ -32,6 +32,11 @@ public final class SDLWindow {
     
     // MARK: - Accessors
     
+    /// Get the numeric ID of a window, for logging purposes.
+    public var identifier: UInt {
+        return UInt(SDL_GetWindowID(internalPointer))
+    }
+    
     /// Fill in information about the display mode used when a fullscreen window is visible.
     public func displayMode() throws -> SDLDisplayMode {
         
