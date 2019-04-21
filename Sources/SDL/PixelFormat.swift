@@ -63,6 +63,14 @@ public extension SDLPixelFormat {
     }
 }
 
+internal extension SDLPixelFormat.Format {
+    
+    /// Get the human readable name of a pixel format
+    var formatName: String {
+        return String(cString: SDL_GetPixelFormatName(rawValue))
+    }
+}
+
 public extension SDLPixelFormat.Format {
     
     /// SDL_PIXELFORMAT_INDEX1LSB
@@ -95,8 +103,8 @@ extension SDLPixelFormat.Format: CustomStringConvertible {
     
     /// Get the human readable name of a pixel format.
     public var description: String {
-        let name = debugDescription
-        return name.split(separator: "_").last.flatMap { String($0) } ?? debugDescription
+        let name = formatName
+        return name.split(separator: "_").last.flatMap { String($0) } ?? name
     }
 }
 
@@ -105,6 +113,6 @@ extension SDLPixelFormat.Format: CustomStringConvertible {
 extension SDLPixelFormat.Format: CustomDebugStringConvertible {
     
     public var debugDescription: String {
-        return String(cString: SDL_GetPixelFormatName(rawValue))
+        return formatName
     }
 }
