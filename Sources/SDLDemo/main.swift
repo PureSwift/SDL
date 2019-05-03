@@ -39,7 +39,7 @@ func main() throws {
                                frame: (x: .centered, y: .centered, width: windowSize.width, height: windowSize.height),
                                options: [.resizable, .shown])
     
-    let framesPerSecond = UInt((try? window.displayMode())?.refreshRate ?? 60)
+    let framesPerSecond = try window.displayMode().refreshRate
     
     print("Running at \(framesPerSecond) FPS")
     
@@ -84,14 +84,15 @@ func main() throws {
         if needsDisplay {
             
             // get data for surface
-            let textureSize = (width: 100, height: 100)
+            let textureSize = (width: 10, height: 10)
             let imageSurface = try SDLSurface(rgb: textureSize, depth: 32)
+            try imageSurface.fill(color: 0xFF_00_00_FF)
             
             let texture = try SDLTexture(renderer: renderer, surface: imageSurface)
             
             // render to screen
             try renderer.clear()
-            try renderer.copy(texture, destination: SDL_Rect(x: 50, y: 50, w: Int32(textureSize.width), h: Int32(textureSize.height)))
+            try renderer.copy(texture, destination: SDL_Rect(x: 100, y: 100, w: 200, h: 200))
             renderer.present()
             
             print("Did redraw screen")
