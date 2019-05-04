@@ -107,8 +107,11 @@ func main() throws {
 }
 
 do { try main() }
+catch let error as SDLError {
+    print("Error: \(error.debugDescription)")
+    exit(EXIT_FAILURE)
+}
 catch {
     print("Error: \(error)")
-    dump(error)
     exit(EXIT_FAILURE)
 }

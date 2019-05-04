@@ -5,6 +5,7 @@
 //  Created by Alsey Coleman Miller on 10/19/18.
 //
 
+import Foundation
 import CSDL2
 
 /// SDL Error
@@ -20,6 +21,18 @@ extension SDLError: CustomStringConvertible {
     public var description: String {
         
         return errorMessage
+    }
+}
+
+extension SDLError: CustomDebugStringConvertible {
+    
+    public var debugDescription: String {
+        
+        var description = errorMessage
+        if let debugInformation = debugInformation {
+            description += " " + "(\(debugInformation.description))"
+        }
+        return description
     }
 }
 
@@ -46,12 +59,10 @@ internal extension SDLError {
             self.type = String(reflecting: type)
         }
         
-        public lazy var description: String = {
-            
-            return [file, line.description, type, function]
-                .compactMap { $0 }
-                .reduce("") { $0 + ($0.isEmpty ? "" : ":") + $1 }
-        }()
+        public var description: String {
+            let fileName = file.components(separatedBy: "/").last ?? file
+            return "\(fileName):\(line.description) \(type).\(function)"
+        }
     }
 }
 
