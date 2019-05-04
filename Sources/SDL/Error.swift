@@ -8,7 +8,7 @@
 import CSDL2
 
 /// SDL Error
-public struct SDLError: CustomStringConvertible, Swift.Error {
+public struct SDLError: CustomStringConvertible, Error {
     
     public let description: String
 }
@@ -16,23 +16,30 @@ public struct SDLError: CustomStringConvertible, Swift.Error {
 internal extension SDLError {
     
     /// Text for last reported error.
-    static var errorDescription: String? {
+    static var current: SDLError? {
         
         guard let cString = SDL_GetError()
             else { return nil }
         
-        return String(cString: cString)
+        SDL_ClearError() // reset error
+        let errorDescription = String(cString: cString)
+        return SDLError(description: errorDescription)
     }
 }
 
 internal extension CInt {
     
-    /// Throws for negative error codes
+    /// Throws for error codes.
     @inline(__always)
     func sdlThrow() throws {
         
-        guard self >= 0
-            else { throw SDLError(description: SDLError.errorDescription ?? "") }
+        guard self >= 0 else {
+            guard let error = SDLError.current else {
+                assertionFailure("No error for error code \(self)")
+                return
+            }
+            throw error
+        }
     }
 }
 
@@ -42,9 +49,13 @@ internal extension Optional {
     @inline(__always)
     func sdlThrow() throws -> Wrapped {
         
-        guard let value = self
-            else { throw SDLError(description: SDLError.errorDescription ?? "") }
-        
+        guard let value = self else {
+            guard let error = SDLError.current else {
+                assertionFailure("No error for nil value \(Wrapped.self)")
+                throw SDLError(description: "")
+            }
+            throw error
+        }
         return value
     }
 }
