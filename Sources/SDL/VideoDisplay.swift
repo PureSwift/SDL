@@ -54,7 +54,7 @@ public extension SDLVideoDisplay {
         let count = SDL_GetNumDisplayModes(Int32(rawValue))
         
         // make sure value is valid
-        try count.sdlThrow()
+        try count.sdlThrow(type: type(of: self))
         
         let set = CountableSet<SDLDisplayMode.Index>(count: Int(count))
         

@@ -107,4 +107,8 @@ func main() throws {
 }
 
 do { try main() }
-catch { fatalError("SDL failed: \(error)") }
+catch {
+    print("Error: \(error)")
+    dump(error)
+    exit(EXIT_FAILURE)
+}

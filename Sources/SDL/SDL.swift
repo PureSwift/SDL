@@ -9,7 +9,7 @@ public struct SDL {
     /// - Note: This must be called before using most other SDL functions.
     public static func initialize(subSystems: BitMaskOptionSet<SubSystem>) throws {
                 
-        try SDL_Init(subSystems.rawValue).sdlThrow()
+        try SDL_Init(subSystems.rawValue).sdlThrow(type: type(of: self))
     }
     
     /// Cleans up all initialized subsystems.

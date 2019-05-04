@@ -51,7 +51,7 @@ public extension SDLDisplayMode {
     init(display: SDLVideoDisplay, index: SDLDisplayMode.Index) throws {
         
         var internalValue = SDL_DisplayMode()
-        try SDL_GetDisplayMode(Int32(display.rawValue), Int32(index.rawValue), &internalValue).sdlThrow()
+        try SDL_GetDisplayMode(Int32(display.rawValue), Int32(index.rawValue), &internalValue).sdlThrow(type: type(of: self))
         self.init(internalValue)
     }
 }

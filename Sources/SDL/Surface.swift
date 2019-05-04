@@ -27,7 +27,7 @@ public final class SDLSurface {
         
         let internalPointer = SDL_CreateRGBSurface(0, CInt(size.width), CInt(size.height), CInt(depth), CUnsignedInt(mask.red), CUnsignedInt(mask.green), CUnsignedInt(mask.blue), CUnsignedInt(mask.alpha))
         
-        self.internalPointer = try internalPointer.sdlThrow()
+        self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
     }
     
     // Get the SDL surface associated with the window.
@@ -39,7 +39,7 @@ public final class SDLSurface {
     public init(window: SDLWindow) throws {
         
         let internalPointer = SDL_GetWindowSurface(window.internalPointer)
-        self.internalPointer = try internalPointer.sdlThrow()
+        self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
     }
     
     // MARK: - Accessors
@@ -101,7 +101,7 @@ public final class SDLSurface {
     /// as critical system locks may be held during this time.
     internal func lock() throws {
         
-        try SDL_LockSurface(internalPointer).sdlThrow()
+        try SDL_LockSurface(internalPointer).sdlThrow(type: type(of: self))
     }
     
     internal func unlock() {
@@ -112,7 +112,7 @@ public final class SDLSurface {
     public func blit(to surface: SDLSurface, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) throws {
         
         // TODO rects
-        try SDL_UpperBlit(internalPointer, nil, surface.internalPointer, nil).sdlThrow()
+        try SDL_UpperBlit(internalPointer, nil, surface.internalPointer, nil).sdlThrow(type: type(of: self))
     }
     
     public func fill(rect: SDL_Rect? = nil, color: UInt32) throws {
@@ -124,6 +124,6 @@ public final class SDLSurface {
             rectPointer = nil
         }
         
-        try SDL_FillRect(internalPointer, rectPointer, color).sdlThrow()
+        try SDL_FillRect(internalPointer, rectPointer, color).sdlThrow(type: type(of: self))
     }
 }

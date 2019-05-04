@@ -37,7 +37,7 @@ public final class SDLTexture {
                                                       Int32(width),
                                                       Int32(height))
         
-        self.internalPointer = try internalPointer.sdlThrow()
+        self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
     }
     
     /// Create a texture from an existing surface.
@@ -47,7 +47,7 @@ public final class SDLTexture {
     public init(renderer: SDLRenderer, surface: SDLSurface) throws {
         
         let internalPointer = SDL_CreateTextureFromSurface(renderer.internalPointer, surface.internalPointer)
-        self.internalPointer = try internalPointer.sdlThrow()
+        self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
     }
     
     // MARK: - Accessors
@@ -59,7 +59,7 @@ public final class SDLTexture {
         var width = Int32()
         var height = Int32()
         
-        try SDL_QueryTexture(internalPointer, &format, &access, &width, &height).sdlThrow()
+        try SDL_QueryTexture(internalPointer, &format, &access, &width, &height).sdlThrow(type: type(of: self))
         
         return Attributes(format: SDLPixelFormat.Format(rawValue: format),
                           access: SDLTexture.Access(rawValue: access)!,
@@ -71,14 +71,14 @@ public final class SDLTexture {
     public func blendMode() throws -> BitMaskOptionSet<SDLBlendMode> {
         
         var value = SDL_BlendMode(0)
-        try SDL_GetTextureBlendMode(internalPointer, &value).sdlThrow()
+        try SDL_GetTextureBlendMode(internalPointer, &value).sdlThrow(type: type(of: self))
         return BitMaskOptionSet<SDLBlendMode>(rawValue: value.rawValue)
     }
     
     /// Set the blend mode used for texture copy operations.
     public func setBlendMode(_ newValue: BitMaskOptionSet<SDLBlendMode>) throws {
         
-        try SDL_SetTextureBlendMode(internalPointer, SDL_BlendMode(newValue.rawValue)).sdlThrow()
+        try SDL_SetTextureBlendMode(internalPointer, SDL_BlendMode(newValue.rawValue)).sdlThrow(type: type(of: self))
     }
     
     // MARK: - Methods
@@ -113,7 +113,7 @@ public final class SDLTexture {
         var pixels: UnsafeMutableRawPointer? = nil
         
         /// must be SDL_TEXTUREACCESS_STREAMING or throws
-        try SDL_LockTexture(internalPointer, rectPointer, &pixels, &pitch).sdlThrow()
+        try SDL_LockTexture(internalPointer, rectPointer, &pixels, &pitch).sdlThrow(type: type(of: self))
         
         defer { SDL_UnlockTexture(internalPointer) }
         
