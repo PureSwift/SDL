@@ -115,7 +115,7 @@ public final class SDLSurface {
         try SDL_UpperBlit(internalPointer, nil, surface.internalPointer, nil).sdlThrow(type: type(of: self))
     }
     
-    public func fill(rect: SDL_Rect? = nil, color: UInt32) throws {
+    public func fill(rect: SDL_Rect? = nil, color: SDLColor) throws {
         
         let rectPointer: UnsafePointer<SDL_Rect>?
         if let rect = rect {
@@ -124,6 +124,6 @@ public final class SDLSurface {
             rectPointer = nil
         }
         
-        try SDL_FillRect(internalPointer, rectPointer, color).sdlThrow(type: type(of: self))
+        try SDL_FillRect(internalPointer, rectPointer, color.rawValue).sdlThrow(type: type(of: self))
     }
 }
