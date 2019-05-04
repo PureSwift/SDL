@@ -126,7 +126,7 @@ public final class SDLRenderer {
     }
     
     /// Fill a rectangle on the current rendering target with the drawing color.
-    public func fill(rect: SDL_Rect?) {
+    public func fill(rect: SDL_Rect? = nil) {
         
         let rectPointer: UnsafePointer<SDL_Rect>?
         if let rect = rect {
