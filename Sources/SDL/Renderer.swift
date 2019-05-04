@@ -124,6 +124,19 @@ public final class SDLRenderer {
         
         try SDL_RenderCopy(internalPointer, texture.internalPointer, sourcePointer, destinationPointer).sdlThrow()
     }
+    
+    /// Fill a rectangle on the current rendering target with the drawing color.
+    public func fill(rect: SDL_Rect?) {
+        
+        let rectPointer: UnsafePointer<SDL_Rect>?
+        if let rect = rect {
+            rectPointer = withUnsafePointer(to: rect) { $0 }
+        } else {
+            rectPointer = nil
+        }
+        
+        SDL_RenderFillRect(internalPointer, rectPointer)
+    }
 }
 
 // MARK: - Supporting Types
