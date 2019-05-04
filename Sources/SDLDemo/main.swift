@@ -61,38 +61,35 @@ func main() throws {
         // increment ticker
         frame += 1
         let startTime = SDL_GetTicks()
-        
         let eventType = SDL_EventType(rawValue: event.type)
         
         switch eventType {
-            
         case SDL_QUIT, SDL_APP_TERMINATING:
-            
             isRunning = false
-            
         case SDL_WINDOWEVENT:
-            
             if event.window.event == UInt8(SDL_WINDOWEVENT_SIZE_CHANGED.rawValue) {
-                
                 needsDisplay = true
             }
-            
         default:
-            
             break
         }
         
         if needsDisplay {
             
-            // get data for surface
-            let surface = try SDLSurface(rgb: (0, 0, 0, 0), size: (width: 10, height: 10), depth: 32)
-            try surface.fill(color: 0xFF_00_FF_00)
-            let surfaceTexture = try SDLTexture(renderer: renderer, surface: surface)
-            
-            // render to screen
             try renderer.setDrawColor(red: 0xFF, green: 0xFF, blue: 0xFF, alpha: 0xFF)
             try renderer.clear()
+            
+            let surface = try SDLSurface(rgb: (0, 0, 0, 0), size: (width: 1, height: 1), depth: 32)
+            let color = SDLColor(
+                format: try SDLPixelFormat(format: .argb8888),
+                red: 25, green: 50, blue: .max, alpha: .max / 2
+            )
+            try surface.fill(color: color)
+            let surfaceTexture = try SDLTexture(renderer: renderer, surface: surface)
+            try surfaceTexture.setBlendMode([.alpha])
             try renderer.copy(surfaceTexture, destination: SDL_Rect(x: 100, y: 100, w: 200, h: 200))
+            
+            // render to screen
             renderer.present()
             
             print("Did redraw screen")
