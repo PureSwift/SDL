@@ -42,9 +42,9 @@ public final class SDLRenderer {
         return (red, green, blue, alpha)
     }
     
-    public func setDrawColor(_ newValue: (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)) throws {
+    public func setDrawColor(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) throws {
         
-         try SDL_SetRenderDrawColor(internalPointer, newValue.red, newValue.green, newValue.blue, newValue.alpha).sdlThrow()
+         try SDL_SetRenderDrawColor(internalPointer, red, green, blue, alpha).sdlThrow()
     }
     
     /// Current rendering target texture.
@@ -90,35 +90,21 @@ public final class SDLRenderer {
     }
     
     /// Copy a portion of the texture to the current rendering target.
-    public func copy(_ texture: SDLTexture, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) throws {
+    public func copy(_ texture: SDLTexture,
+                     source: SDL_Rect? = nil,
+                     destination: SDL_Rect? = nil) throws {
         
-        let sourcePointer: UnsafeMutablePointer<SDL_Rect>?
-        
-        defer { sourcePointer?.deallocate() }
-        
+        let sourcePointer: UnsafePointer<SDL_Rect>?
         if let rect = source {
-            
-            sourcePointer = UnsafeMutablePointer.allocate(capacity: 1)
-            
-            sourcePointer?.pointee = rect
-            
+            sourcePointer = withUnsafePointer(to: rect) { $0 }
         } else {
-            
             sourcePointer = nil
         }
         
-        let destinationPointer: UnsafeMutablePointer<SDL_Rect>?
-        
-        defer { destinationPointer?.deallocate() }
-        
+        let destinationPointer: UnsafePointer<SDL_Rect>?
         if let rect = destination {
-            
-            destinationPointer = UnsafeMutablePointer.allocate(capacity: 1)
-            
-            destinationPointer?.pointee = rect
-            
+            destinationPointer = withUnsafePointer(to: rect) { $0 }
         } else {
-            
             destinationPointer = nil
         }
         

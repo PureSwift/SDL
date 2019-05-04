@@ -45,7 +45,7 @@ func main() throws {
     
     // renderer
     let renderer = try SDLRenderer(window: window)
-    try renderer.setDrawColor((0xFF, 0xFF, 0xFF, 0xFF))
+    try renderer.setDrawColor(red: 0xFF, green: 0xFF, blue: 0xFF, alpha: 0xFF)
     
     var frame = 0
     
