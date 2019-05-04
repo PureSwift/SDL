@@ -42,7 +42,8 @@ public final class SDLRenderer {
         return (red, green, blue, alpha)
     }
     
-    public func setDrawColor(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) throws {
+    /// Set the color used for drawing operations (Rect, Line and Clear).
+    public func setDrawColor(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8 = .max) throws {
         
          try SDL_SetRenderDrawColor(internalPointer, red, green, blue, alpha).sdlThrow()
     }
@@ -50,6 +51,7 @@ public final class SDLRenderer {
     /// Current rendering target texture.
     public private(set) var target: SDLTexture?
     
+    /// Set a texture as the current rendering target.
     public func setTarget(_ newValue: SDLTexture?) throws {
         
         try SDL_SetRenderTarget(internalPointer, target?.internalPointer).sdlThrow()
@@ -112,7 +114,7 @@ public final class SDLRenderer {
     }
     
     /// Fill a rectangle on the current rendering target with the drawing color.
-    public func fill(rect: SDL_Rect? = nil) {
+    public func fill(rect: SDL_Rect? = nil) throws {
         
         let rectPointer: UnsafePointer<SDL_Rect>?
         if let rect = rect {
@@ -121,7 +123,7 @@ public final class SDLRenderer {
             rectPointer = nil
         }
         
-        SDL_RenderFillRect(internalPointer, rectPointer)
+        try SDL_RenderFillRect(internalPointer, rectPointer).sdlThrow()
     }
 }
 

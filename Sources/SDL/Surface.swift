@@ -20,9 +20,10 @@ public final class SDLSurface {
         SDL_FreeSurface(internalPointer)
     }
     
-    public init(rgb size: (width: Int, height: Int),
-                 depth: Int = 32,
-                 mask: (red: UInt, green: UInt, blue: UInt, alpha: UInt) = (0,0,0,0)) throws {
+    /// Create an RGB surface.
+    public init(rgb mask: (red: UInt, green: UInt, blue: UInt, alpha: UInt),
+                size: (width: Int, height: Int),
+                depth: Int = 32) throws {
         
         let internalPointer = SDL_CreateRGBSurface(0, CInt(size.width), CInt(size.height), CInt(depth), CUnsignedInt(mask.red), CUnsignedInt(mask.green), CUnsignedInt(mask.blue), CUnsignedInt(mask.alpha))
         

@@ -45,7 +45,6 @@ func main() throws {
     
     // renderer
     let renderer = try SDLRenderer(window: window)
-    try renderer.setDrawColor(red: 0xFF, green: 0xFF, blue: 0xFF, alpha: 0xFF)
     
     var frame = 0
     
@@ -84,15 +83,14 @@ func main() throws {
         if needsDisplay {
             
             // get data for surface
-            let textureSize = (width: 10, height: 10)
-            let imageSurface = try SDLSurface(rgb: textureSize, depth: 32)
-            try imageSurface.fill(color: 0xFF_00_00_FF)
-            
-            let texture = try SDLTexture(renderer: renderer, surface: imageSurface)
+            let surface = try SDLSurface(rgb: (0, 0, 0, 0), size: (width: 10, height: 10), depth: 32)
+            try surface.fill(color: 0xFF_00_FF_00)
+            let surfaceTexture = try SDLTexture(renderer: renderer, surface: surface)
             
             // render to screen
+            try renderer.setDrawColor(red: 0xFF, green: 0xFF, blue: 0xFF, alpha: 0xFF)
             try renderer.clear()
-            try renderer.copy(texture, destination: SDL_Rect(x: 100, y: 100, w: 200, h: 200))
+            try renderer.copy(surfaceTexture, destination: SDL_Rect(x: 100, y: 100, w: 200, h: 200))
             renderer.present()
             
             print("Did redraw screen")
