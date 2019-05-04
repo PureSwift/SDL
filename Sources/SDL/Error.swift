@@ -5,7 +5,6 @@
 //  Created by Alsey Coleman Miller on 10/19/18.
 //
 
-import Foundation
 import CSDL2
 
 /// SDL Error
@@ -60,7 +59,7 @@ internal extension SDLError {
         }
         
         public var description: String {
-            let fileName = file.components(separatedBy: "/").last ?? file
+            let fileName = file.split(separator: "/").last.flatMap { String($0) } ?? file
             return "\(fileName):\(line.description) \(type).\(function)"
         }
     }
