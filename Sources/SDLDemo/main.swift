@@ -15,9 +15,11 @@ if renderDrivers.isEmpty == false {
             info.options.forEach { print("  \($0)") }
             print("Formats:")
             info.formats.forEach { print("  \($0)") }
-            print("Maximum Size:")
-            print("  Width: \(info.maximumSize.width)")
-            print("  Height: \(info.maximumSize.height)")
+            if info.maximumSize.width > 0 || info.maximumSize.height > 0 {
+                print("Maximum Size:")
+                print("  Width: \(info.maximumSize.width)")
+                print("  Height: \(info.maximumSize.height)")
+            }
             print("=======")
         } catch {
             print("Could not get information for driver \(driver.rawValue)")
