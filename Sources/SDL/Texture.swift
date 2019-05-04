@@ -81,6 +81,40 @@ public final class SDLTexture {
         try SDL_SetTextureBlendMode(internalPointer, SDL_BlendMode(newValue.rawValue)).sdlThrow(type: type(of: self))
     }
     
+    /**
+     Get the additional alpha value used in render copy operations.
+     
+     - Note:
+     When this texture is rendered, during the copy operation the source alpha value is modulated by this alpha value according to the following formula:
+     
+     `srcA = srcA * (alpha / 255)`
+     
+     Alpha modulation is not always supported by the renderer; it will return -1 if alpha modulation is not supported.
+     */
+    public func alphaModulation() throws -> UInt8 {
+        
+        var alpha: UInt8 = 0
+        try SDL_GetTextureAlphaMod(internalPointer, &alpha).sdlThrow(type: type(of: self))
+        return alpha
+    }
+    
+    /**
+     Set an additional alpha value used in render copy operations.
+     
+     - Parameter alpha: the source alpha value multiplied into copy operations.
+     
+     - Note:
+     When this texture is rendered, during the copy operation the source alpha value is modulated by this alpha value according to the following formula:
+     
+     `srcA = srcA * (alpha / 255)`
+     
+     Alpha modulation is not always supported by the renderer; it will return -1 if alpha modulation is not supported.
+     */
+    public func setAlphaModulation(_ alpha: UInt8) throws {
+        
+        try SDL_SetTextureAlphaMod(internalPointer, alpha).sdlThrow(type: type(of: self))
+    }
+    
     // MARK: - Methods
     
     /// Lock a portion of the texture for write-only pixel access (only valid for streaming textures).
