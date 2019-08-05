@@ -92,25 +92,37 @@ public final class SDLRenderer {
     }
     
     /// Copy a portion of the texture to the current rendering target.
-    public func copy(_ texture: SDLTexture,
-                     source: SDL_Rect? = nil,
-                     destination: SDL_Rect? = nil) throws {
-        
-        let sourcePointer: UnsafePointer<SDL_Rect>?
-        if let rect = source {
-            sourcePointer = withUnsafePointer(to: rect) { $0 }
-        } else {
-            sourcePointer = nil
-        }
-        
-        let destinationPointer: UnsafePointer<SDL_Rect>?
-        if let rect = destination {
-            destinationPointer = withUnsafePointer(to: rect) { $0 }
-        } else {
-            destinationPointer = nil
-        }
-        
-        try SDL_RenderCopy(internalPointer, texture.internalPointer, sourcePointer, destinationPointer).sdlThrow(type: type(of: self))
+    public func copy(_ texture: SDLTexture, source: SDL_Rect, destination: SDL_Rect) throws {
+        var s = source
+        var d = destination
+        try SDL_RenderCopy(internalPointer, texture.internalPointer, &s, &d).sdlThrow(type: type(of: self))
+    }
+    
+    /// Copy a portion of the texture to the current rendering target.
+    public func copy(_ texture: SDLTexture, source s: inout SDL_Rect, destination d: inout SDL_Rect) throws {
+        try SDL_RenderCopy(internalPointer, texture.internalPointer, &s, &d).sdlThrow(type: type(of: self))
+    }
+    
+    /// Copy a portion of the texture to the current rendering target.
+    public func copy(_ texture: SDLTexture, source: SDL_Rect) throws {
+        var s = source
+        try SDL_RenderCopy(internalPointer, texture.internalPointer, &s, nil).sdlThrow(type: type(of: self))
+    }
+    
+    /// Copy a portion of the texture to the current rendering target.
+    public func copy(_ texture: SDLTexture, source s: inout SDL_Rect) throws {
+        try SDL_RenderCopy(internalPointer, texture.internalPointer, &s, nil).sdlThrow(type: type(of: self))
+    }
+    
+    /// Copy a portion of the texture to the current rendering target.
+    public func copy(_ texture: SDLTexture, destination: SDL_Rect) throws {
+        var d = destination
+        try SDL_RenderCopy(internalPointer, texture.internalPointer, nil, &d).sdlThrow(type: type(of: self))
+    }
+    
+    /// Copy a portion of the texture to the current rendering target.
+    public func copy(_ texture: SDLTexture, destination d: inout SDL_Rect) throws {
+        try SDL_RenderCopy(internalPointer, texture.internalPointer, nil, &d).sdlThrow(type: type(of: self))
     }
     
     /// Fill a rectangle on the current rendering target with the drawing color.
