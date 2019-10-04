@@ -114,8 +114,29 @@ public final class SDLTexture {
         
         try SDL_SetTextureAlphaMod(internalPointer, alpha).sdlThrow(type: type(of: self))
     }
+
     
     // MARK: - Methods
+     
+    /// Update the given texture rectangle with new pixel data.
+    /// - Parameters:
+    ///     - rect: A pointer to the rectangle to lock for access.
+    ///             If the rect is `nil`, the entire texture will be updated.
+    ///     - body: The closure is called with the pixel pointer and pitch.
+    ///     - pointer: The pixel pointer.
+    ///     - pitch: The pitch.
+    public func update(for rect: SDL_Rect? = nil, pixels: UnsafeMutableRawPointer, pitch: Int) throws {
+        let rectPointer: UnsafeMutablePointer<SDL_Rect>?
+        if let rect = rect {
+            rectPointer = UnsafeMutablePointer.allocate(capacity: 1)
+            rectPointer?.pointee = rect
+        } else {
+            rectPointer = nil
+        }
+        defer { rectPointer?.deallocate() }
+    
+        try SDL_UpdateTexture(internalPointer, rectPointer, pixels, Int32(pitch)).sdlThrow(type: type(of: self))
+    }
     
     /// Lock a portion of the texture for write-only pixel access (only valid for streaming textures).
     /// - Parameters:
