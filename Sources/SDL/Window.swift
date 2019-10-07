@@ -73,6 +73,12 @@ public final class SDLWindow {
         return (Int(width), Int(height))
     }
     
+    /// Raise a window above other windows and set the input focus
+    public func raise() {
+        
+        SDL_RaiseWindow(internalPointer)
+    }
+    
     /// The output size in pixels of a rendering context.
     public var rendererSize: (width: Int, height: Int)? {
         
