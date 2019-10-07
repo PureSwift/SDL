@@ -110,6 +110,21 @@ public final class SDLWindow {
             return SDL_SetWindowDisplayMode(internalPointer, nil) >= 0
         }
     }
+    
+    /// Set the title of a window
+    public var title: String {
+        
+        get {
+            
+            return String(cString: SDL_GetWindowTitle(internalPointer))
+            
+        }
+        set {
+            
+            SDL_SetWindowTitle(internalPointer, newValue)
+            
+        }
+    }
 }
 
 // MARK: - Supporting Types
