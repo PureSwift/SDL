@@ -76,6 +76,12 @@ public final class SDLRenderer {
         try SDL_SetRenderDrawBlendMode(internalPointer, SDL_BlendMode(newValue.rawValue)).sdlThrow(type: type(of: self))
     }
     
+    /// Set a device independent resolution for rendering
+    public func setLogicalSize(width: Int32, height: Int32) throws {
+        
+        try SDL_RenderSetLogicalSize(internalPointer, width, height).sdlThrow(type: type(of: self))
+    }
+    
     // MARK: - Methods
     
     /// Clear the current rendering target with the drawing color
