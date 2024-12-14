@@ -233,7 +233,7 @@ public extension SDLRenderer {
             return CountableSet<Driver>(count: count)
         }
         
-        public static let `default` = Driver(rawValue: -1)
+        public static var `default`: Driver { Driver(rawValue: -1) }
         
         public let rawValue: Int
         

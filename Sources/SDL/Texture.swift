@@ -148,27 +148,16 @@ public final class SDLTexture {
     ///     - pitch: The pitch.
     public func withUnsafeMutableBytes<Result>(for rect: SDL_Rect? = nil, _ body: (_ pointer: UnsafeMutableRawPointer, _ pitch: Int) throws -> Result) throws -> Result? {
         
-        let rectPointer: UnsafeMutablePointer<SDL_Rect>?
-        
-        if var rect = rect {
-            
-            rectPointer = UnsafeMutablePointer.allocate(capacity: 1)
-            
-            rectPointer?.pointee = rect
-            
-        } else {
-            
-            rectPointer = nil
-        }
-        
-        defer { rectPointer?.deallocate() }
-        
         var pitch: Int32 = 0
         
         var pixels: UnsafeMutableRawPointer? = nil
         
-        /// must be SDL_TEXTUREACCESS_STREAMING or throws
-        try SDL_LockTexture(internalPointer, rectPointer, &pixels, &pitch).sdlThrow(type: type(of: self))
+        // must be SDL_TEXTUREACCESS_STREAMING or throws
+        if var rect {
+            try SDL_LockTexture(internalPointer, &rect, &pixels, &pitch).sdlThrow(type: type(of: self))
+        } else {
+            try SDL_LockTexture(internalPointer, nil, &pixels, &pitch).sdlThrow(type: type(of: self))
+        }
         
         defer { SDL_UnlockTexture(internalPointer) }
         

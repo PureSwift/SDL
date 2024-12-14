@@ -7,9 +7,4 @@ class SDLTests: XCTestCase {
         
         
     }
-
-
-    static var allTests: [(String, (SDLTests) -> () -> Void)] = [
-        ("testExample", testExample),
-    ]
 }

@@ -8,7 +8,7 @@
 import CSDL2
 
 /// SDL Window
-public final class SDLWindow {
+public final class SDLWindow: Identifiable {
     
     // MARK: - Properties
     
@@ -33,7 +33,7 @@ public final class SDLWindow {
     // MARK: - Accessors
     
     /// Get the numeric ID of a window, for logging purposes.
-    public var identifier: UInt {
+    public var id: UInt {
         return UInt(SDL_GetWindowID(internalPointer))
     }
     
@@ -57,7 +57,7 @@ public final class SDLWindow {
             return (Int(width), Int(height))
         }
         
-        set { SDL_SetWindowSize(internalPointer, Int32(size.width), Int32(size.height)) }
+        set { SDL_SetWindowSize(internalPointer, Int32(newValue.width), Int32(newValue.height)) }
     }
     
     /// Size of a window's underlying drawable in pixels (for use with glViewport).
@@ -129,8 +129,8 @@ public final class SDLWindow {
 
 // MARK: - Supporting Types
 
-private var SDL_WINDOWPOS_UNDEFINED: CInt { return 0x1FFF0000 }
-private var SDL_WINDOWPOS_CENTERED: CInt { return 0x2FFF0000 }
+internal var SDL_WINDOWPOS_UNDEFINED: CInt { return 0x1FFF0000 }
+internal var SDL_WINDOWPOS_CENTERED: CInt { return 0x2FFF0000 }
 
 public extension SDLWindow {
         

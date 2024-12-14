@@ -37,7 +37,7 @@ extension SDLError: CustomDebugStringConvertible {
 
 internal extension SDLError {
     
-    final class DebugInformation: CustomStringConvertible {
+    final class DebugInformation: CustomStringConvertible, Sendable {
         
         public let file: String
         

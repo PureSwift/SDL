@@ -1,5 +1,4 @@
-// swift-tools-version:5.0
-// The swift-tools-version declares the minimum version of Swift required to build this package.
+// swift-tools-version:6.0
 import PackageDescription
 
 let package = Package(
@@ -7,28 +6,32 @@ let package = Package(
     products: [
         .library(
             name: "SDL",
-            targets: ["SDL"]),
+            targets: ["SDL"]
+        ),
         .executable(
             name: "SDLDemo",
-            targets: ["SDLDemo"]),
-        ],
+            targets: ["SDLDemo"]
+        )
+    ],
     targets: [
-        .target(
+        .executableTarget(
             name: "SDLDemo",
-            dependencies: ["SDL"]),
+            dependencies: ["SDL"]
+        ),
         .target(
             name: "SDL",
-            dependencies: ["CSDL2"]),
+            dependencies: ["CSDL2"]
+        ),
         .systemLibrary(
             name: "CSDL2",
             pkgConfig: "sdl2",
             providers: [
                 .brew(["sdl2"]),
                 .apt(["libsdl2-dev"])
-            ]),
+            ]
+        ),
         .testTarget(
             name: "SDLTests",
             dependencies: ["SDL"]),
-        ],
-    swiftLanguageVersions: [.v5]
+        ]
 )
