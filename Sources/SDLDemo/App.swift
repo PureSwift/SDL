@@ -26,7 +26,8 @@ struct SDLDemo {
         
         let window = try SDLWindow(title: "SDLDemo",
                                    frame: (x: .centered, y: .centered, width: windowSize.width, height: windowSize.height),
-                                   options: [.resizable, .shown])
+                                   options: [.resizable, .shown, .opengl]
+        )
         
         let framesPerSecond = try window.displayMode().refreshRate
         
