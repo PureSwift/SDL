@@ -146,7 +146,7 @@ public final class SDLTexture {
     ///     - body: The closure is called with the pixel pointer and pitch.
     ///     - pointer: The pixel pointer.
     ///     - pitch: The pitch.
-    public func withUnsafeMutableBytes<Result>(for rect: SDL_Rect? = nil, _ body: (_ pointer: UnsafeMutableRawPointer, _ pitch: Int) throws(SDLError) -> Result) throws(SDLError) -> Result? {
+    public func withUnsafeMutableBytes<Result>(for rect: SDL_Rect? = nil, _ body: (_ pointer: UnsafeMutableRawPointer, _ pitch: Int) throws -> Result) throws -> Result? {
         
         var pitch: Int32 = 0
         
