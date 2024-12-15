@@ -12,13 +12,12 @@ public struct SDLError: Error {
     
     public let errorMessage: String
     
-    internal let debugInformation: DebugInformation?
+    public let context: Context?
 }
 
 extension SDLError: CustomStringConvertible {
     
     public var description: String {
-        
         return errorMessage
     }
 }
@@ -28,16 +27,16 @@ extension SDLError: CustomDebugStringConvertible {
     public var debugDescription: String {
         
         var description = errorMessage
-        if let debugInformation = debugInformation {
-            description += " " + "(\(debugInformation.description))"
+        if let context {
+            description += " " + "(\(context.description))"
         }
         return description
     }
 }
 
-internal extension SDLError {
+public extension SDLError {
     
-    final class DebugInformation: CustomStringConvertible, Sendable {
+    struct Context: CustomStringConvertible, Sendable {
         
         public let file: String
         
@@ -68,7 +67,7 @@ internal extension SDLError {
 internal extension SDLError {
     
     /// Text for last reported error.
-    static func current(debugInformation: DebugInformation? = nil) -> SDLError? {
+    static func current(context: Context? = nil) -> SDLError? {
         
         guard let cString = SDL_GetError()
             else { return nil }
@@ -76,7 +75,7 @@ internal extension SDLError {
         SDL_ClearError() // reset error
         let errorDescription = String(cString: cString)
         
-        return SDLError(errorMessage: errorDescription, debugInformation: debugInformation)
+        return SDLError(errorMessage: errorDescription, context: context)
     }
 }
 
@@ -84,16 +83,18 @@ internal extension CInt {
     
     /// Throws for error codes.
     @inline(__always)
-    func sdlThrow(file: String = #file,
-                  type: Any,
-                  function: String = #function,
-                  line: UInt = #line) throws {
+    func sdlThrow(
+        file: String = #file,
+        function: String = #function,
+        line: UInt = #line,
+        type: Any
+    ) throws(SDLError) {
         
         guard self >= 0 else {
-            let debugInformation = SDLError.DebugInformation(file: file, type: type, function: function, line: line)
-            guard let error = SDLError.current(debugInformation: debugInformation) else {
+            let context = SDLError.Context(file: file, type: type, function: function, line: line)
+            guard let error = SDLError.current(context: context) else {
                 assertionFailure("No error for error code \(self)")
-                throw SDLError(errorMessage: "Error code \(self)", debugInformation: debugInformation)
+                throw SDLError(errorMessage: "Error code \(self)", context: context)
             }
             throw error
         }
@@ -105,15 +106,15 @@ internal extension Optional {
     /// Unwraps optional value, throwing error if nil.
     @inline(__always)
     func sdlThrow(file: String = #file,
-                  type: Any,
                   function: String = #function,
-                  line: UInt = #line) throws -> Wrapped {
+                  line: UInt = #line,
+                  type: Any) throws(SDLError) -> Wrapped {
         
         guard let value = self else {
-            let debugInformation = SDLError.DebugInformation(file: file, type: type, function: function, line: line)
-            guard let error = SDLError.current(debugInformation: debugInformation) else {
+            let context = SDLError.Context(file: file, type: type, function: function, line: line)
+            guard let error = SDLError.current(context: context) else {
                 assertionFailure("No error for nil value \(Wrapped.self)")
-                throw SDLError(errorMessage: "Nil value \(Wrapped.self)", debugInformation: debugInformation)
+                throw SDLError(errorMessage: "Nil value \(Wrapped.self)", context: context)
             }
             throw error
         }
