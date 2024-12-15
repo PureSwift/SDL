@@ -23,7 +23,7 @@ public final class SDLPixelFormat {
     /// Creates a new Pixel Format.
     ///
     /// -Note: Returned structure may come from a shared global cache (i.e. not newly allocated), and hence should not be modified, especially the palette. Weird errors such as `Blit combination not supported` may occur.
-    public init(format: SDLPixelFormat.Format) throws {
+    public init(format: SDLPixelFormat.Format) throws(SDLError) {
         
         let internalFormat = SDL_AllocFormat(format.rawValue)
         self.internalPointer = try internalFormat.sdlThrow(type: type(of: self))
@@ -40,7 +40,7 @@ public final class SDLPixelFormat {
     // MARK: - Methods
     
     /// Set the palette for a pixel format structure
-    public func setPalette(_ palette: SDLPalette) throws {
+    public func setPalette(_ palette: SDLPalette) throws(SDLError) {
         
         try SDL_SetPixelFormatPalette(internalPointer, palette.internalPointer).sdlThrow(type: type(of: self))
     }

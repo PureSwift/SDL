@@ -14,7 +14,6 @@ public struct SDLDisplayMode {
     internal let internalValue: SDL_DisplayMode
     
     internal init(_ internalValue: SDL_DisplayMode) {
-        
         self.internalValue = internalValue
     }
     
@@ -38,9 +37,7 @@ public struct SDLDisplayMode {
     }
     
     /// Access the underlying driver data.
-    @inline(__always)
-    public func withDriverData <Result> (_ body: (UnsafeMutableRawPointer?) throws -> Result) rethrows -> Result {
-        
+    public func withDriverData <Result, Error> (_ body: (UnsafeMutableRawPointer?) throws(Error) -> Result) rethrows -> Result where Error: Swift.Error {
         return try body(internalValue.driverdata)
     }
 }
@@ -48,7 +45,7 @@ public struct SDLDisplayMode {
 public extension SDLDisplayMode {
     
     /// Fill in information about a specific display mode.
-    init(display: SDLVideoDisplay, index: SDLDisplayMode.Index) throws {
+    init(display: SDLVideoDisplay, index: SDLDisplayMode.Index) throws(SDLError) {
         
         var internalValue = SDL_DisplayMode()
         try SDL_GetDisplayMode(Int32(display.rawValue), Int32(index.rawValue), &internalValue).sdlThrow(type: type(of: self))
@@ -63,7 +60,6 @@ public extension SDLDisplayMode {
         public let rawValue: Int
         
         public init(rawValue: Int) {
-            
             self.rawValue = rawValue
         }
     }

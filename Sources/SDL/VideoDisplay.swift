@@ -8,7 +8,7 @@
 import CSDL2
 
 /// SDL Video Display
-public struct SDLVideoDisplay: IndexRepresentable {
+public struct SDLVideoDisplay: IndexRepresentable, Equatable, Hashable, Sendable {
     
     public let rawValue: Int
     
@@ -49,7 +49,7 @@ public extension SDLVideoDisplay {
     }
     
     /// Get the availible display modes.
-    func modes() throws -> [SDLDisplayMode] {
+    func modes() throws(SDLError) -> [SDLDisplayMode] {
         
         let count = SDL_GetNumDisplayModes(Int32(rawValue))
         
@@ -58,6 +58,7 @@ public extension SDLVideoDisplay {
         
         let set = CountableSet<SDLDisplayMode.Index>(count: Int(count))
         
-        return try set.map { try SDLDisplayMode(display: self, index: $0) }
+        do { return try set.map { try SDLDisplayMode(display: self, index: $0) } }
+        catch { throw error as! SDLError } // compiler error
     }
 }

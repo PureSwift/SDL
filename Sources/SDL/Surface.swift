@@ -23,7 +23,7 @@ public final class SDLSurface {
     /// Create an RGB surface.
     public init(rgb mask: (red: UInt, green: UInt, blue: UInt, alpha: UInt),
                 size: (width: Int, height: Int),
-                depth: Int = 32) throws {
+                depth: Int = 32) throws(SDLError) {
         
         let internalPointer = SDL_CreateRGBSurface(0, CInt(size.width), CInt(size.height), CInt(depth), CUnsignedInt(mask.red), CUnsignedInt(mask.green), CUnsignedInt(mask.blue), CUnsignedInt(mask.alpha))
         
@@ -36,7 +36,7 @@ public final class SDLSurface {
     /// if necessary. This surface will be freed when the window is destroyed.
     /// - Returns: The window's framebuffer surface, or `nil` on error.
     /// - Note: You may not combine this with 3D or the rendering API on this window.
-    public init(window: SDLWindow) throws {
+    public init(window: SDLWindow) throws(SDLError) {
         
         let internalPointer = SDL_GetWindowSurface(window.internalPointer)
         self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
@@ -69,7 +69,7 @@ public final class SDLSurface {
     // MARK: - Methods
     
     /// Get a pointer to the data of the surface, for direct inspection or modification.
-    public func withUnsafeMutableBytes<Result>(_ body: (UnsafeMutableRawPointer) throws -> Result) throws -> Result? {
+    public func withUnsafeMutableBytes<Result, Error>(_ body: (UnsafeMutableRawPointer) throws(Error) -> Result) throws -> Result? where Error: Swift.Error {
         
         let mustLock = self.mustLock
         
@@ -99,7 +99,7 @@ public final class SDLSurface {
     ///
     /// - Note: No operating system or library calls should be made between lock/unlock pairs,
     /// as critical system locks may be held during this time.
-    internal func lock() throws {
+    internal func lock() throws(SDLError) {
         
         try SDL_LockSurface(internalPointer).sdlThrow(type: type(of: self))
     }
@@ -109,13 +109,13 @@ public final class SDLSurface {
         SDL_UnlockSurface(internalPointer)
     }
     
-    public func blit(to surface: SDLSurface, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) throws {
+    public func blit(to surface: SDLSurface, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) throws(SDLError) {
         
         // TODO rects
         try SDL_UpperBlit(internalPointer, nil, surface.internalPointer, nil).sdlThrow(type: type(of: self))
     }
     
-    public func fill(rect: SDL_Rect? = nil, color: SDLColor) throws {
+    public func fill(rect: SDL_Rect? = nil, color: SDLColor) throws(SDLError) {
         
         let rectPointer: UnsafePointer<SDL_Rect>?
         if let rect = rect {

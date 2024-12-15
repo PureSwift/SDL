@@ -21,7 +21,7 @@ public final class SDLPalette {
     }
     
     /// Create a palette structure with the specified number of color entries.
-    public init(numberOfColors: Int) throws {
+    public init(numberOfColors: Int) throws(SDLError) {
         
         let internalFormat = SDL_AllocPalette(Int32(numberOfColors))
         self.internalPointer = try internalFormat.sdlThrow(type: type(of: self))

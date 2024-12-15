@@ -7,7 +7,7 @@ public struct SDL {
     /// You should specify the subsystems which you will be using in your application
     ///
     /// - Note: This must be called before using most other SDL functions.
-    public static func initialize(subSystems: BitMaskOptionSet<SubSystem>) throws {
+    public static func initialize(subSystems: BitMaskOptionSet<SubSystem>) throws(SDLError) {
                 
         try SDL_Init(subSystems.rawValue).sdlThrow(type: type(of: self))
     }

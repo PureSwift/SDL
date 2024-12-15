@@ -29,7 +29,7 @@ public final class SDLTexture {
     /// - Parameter height: The height of the texture in pixels.
     /// - Returns: The created texture is returned, or `nil` if no rendering context
     /// was active, the format was unsupported, or the width or height were out of range.
-    public init(renderer: SDLRenderer, format: SDLPixelFormat.Format, access: Access, width: Int, height: Int) throws {
+    public init(renderer: SDLRenderer, format: SDLPixelFormat.Format, access: Access, width: Int, height: Int) throws(SDLError) {
         
         let internalPointer = SDL_CreateTexture(renderer.internalPointer,
                                                       format.rawValue,
@@ -44,7 +44,7 @@ public final class SDLTexture {
     /// - Parameter renderer: The renderer.
     /// - Parameter surface: The surface containing pixel data used to fill the texture.
     /// - Returns: The created texture is returned, or `nil` on error.
-    public init(renderer: SDLRenderer, surface: SDLSurface) throws {
+    public init(renderer: SDLRenderer, surface: SDLSurface) throws(SDLError) {
         
         let internalPointer = SDL_CreateTextureFromSurface(renderer.internalPointer, surface.internalPointer)
         self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
@@ -52,7 +52,7 @@ public final class SDLTexture {
     
     // MARK: - Accessors
     
-    public func attributes() throws -> Attributes {
+    public func attributes() throws(SDLError) -> Attributes {
         
         var format = UInt32()
         var access = Int32()
@@ -68,7 +68,7 @@ public final class SDLTexture {
     }
     
     /// The blend mode used for texture copy operations.
-    public func blendMode() throws -> BitMaskOptionSet<SDLBlendMode> {
+    public func blendMode() throws(SDLError) -> BitMaskOptionSet<SDLBlendMode> {
         
         var value = SDL_BlendMode(0)
         try SDL_GetTextureBlendMode(internalPointer, &value).sdlThrow(type: type(of: self))
@@ -76,7 +76,7 @@ public final class SDLTexture {
     }
     
     /// Set the blend mode used for texture copy operations.
-    public func setBlendMode(_ newValue: BitMaskOptionSet<SDLBlendMode>) throws {
+    public func setBlendMode(_ newValue: BitMaskOptionSet<SDLBlendMode>) throws(SDLError) {
         
         try SDL_SetTextureBlendMode(internalPointer, SDL_BlendMode(newValue.rawValue)).sdlThrow(type: type(of: self))
     }
@@ -91,7 +91,7 @@ public final class SDLTexture {
      
      Alpha modulation is not always supported by the renderer; it will return -1 if alpha modulation is not supported.
      */
-    public func alphaModulation() throws -> UInt8 {
+    public func alphaModulation() throws(SDLError) -> UInt8 {
         
         var alpha: UInt8 = 0
         try SDL_GetTextureAlphaMod(internalPointer, &alpha).sdlThrow(type: type(of: self))
@@ -110,7 +110,7 @@ public final class SDLTexture {
      
      Alpha modulation is not always supported by the renderer; it will return -1 if alpha modulation is not supported.
      */
-    public func setAlphaModulation(_ alpha: UInt8) throws {
+    public func setAlphaModulation(_ alpha: UInt8) throws(SDLError) {
         
         try SDL_SetTextureAlphaMod(internalPointer, alpha).sdlThrow(type: type(of: self))
     }
@@ -125,7 +125,7 @@ public final class SDLTexture {
     ///     - body: The closure is called with the pixel pointer and pitch.
     ///     - pointer: The pixel pointer.
     ///     - pitch: The pitch.
-    public func update(for rect: SDL_Rect? = nil, pixels: UnsafeMutableRawPointer, pitch: Int) throws {
+    public func update(for rect: SDL_Rect? = nil, pixels: UnsafeMutableRawPointer, pitch: Int) throws(SDLError) {
         let rectPointer: UnsafeMutablePointer<SDL_Rect>?
         if let rect = rect {
             rectPointer = UnsafeMutablePointer.allocate(capacity: 1)
@@ -146,7 +146,7 @@ public final class SDLTexture {
     ///     - body: The closure is called with the pixel pointer and pitch.
     ///     - pointer: The pixel pointer.
     ///     - pitch: The pitch.
-    public func withUnsafeMutableBytes<Result>(for rect: SDL_Rect? = nil, _ body: (_ pointer: UnsafeMutableRawPointer, _ pitch: Int) throws -> Result) throws -> Result? {
+    public func withUnsafeMutableBytes<Result>(for rect: SDL_Rect? = nil, _ body: (_ pointer: UnsafeMutableRawPointer, _ pitch: Int) throws(SDLError) -> Result) throws(SDLError) -> Result? {
         
         var pitch: Int32 = 0
         
