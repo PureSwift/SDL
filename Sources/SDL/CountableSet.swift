@@ -61,19 +61,3 @@ public protocol IndexRepresentable: RawRepresentable, Hashable {
     
     var rawValue: Int { get }
 }
-
-public extension IndexRepresentable {
-    
-    var hashValue: Int {
-        
-        return rawValue.hashValue
-    }
-}
-
-public extension IndexRepresentable {
-    
-    static func == (lhs: Self, rhs: Self) -> Bool {
-        
-        return lhs.rawValue == rhs.rawValue
-    }
-}
