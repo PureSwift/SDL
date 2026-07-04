@@ -13,6 +13,22 @@ let package = Package(
             targets: ["SDL3Swift"]
         ),
         .library(
+            name: "SDL2Image",
+            targets: ["SDL2Image"]
+        ),
+        .library(
+            name: "SDL2Mixer",
+            targets: ["SDL2Mixer"]
+        ),
+        .library(
+            name: "SDL3Image",
+            targets: ["SDL3Image"]
+        ),
+        .library(
+            name: "SDL3Mixer",
+            targets: ["SDL3Mixer"]
+        ),
+        .library(
             name: "CSDL2Image",
             targets: ["CSDL2Image"]
         ),
@@ -66,6 +82,28 @@ let package = Package(
                 .brew(["sdl3"]),
                 .apt(["libsdl3-dev"])
             ]
+        ),
+        // Separate, opt-in targets: consumers that don't need image loading or audio playback
+        // don't pay for (or need to install) SDL_image / SDL_mixer at all.
+        .target(
+            name: "SDL2Image",
+            dependencies: ["SDL2Swift", "CSDL2Image"],
+            path: "Sources/SDL2Image"
+        ),
+        .target(
+            name: "SDL2Mixer",
+            dependencies: ["SDL2Swift", "CSDL2Mixer"],
+            path: "Sources/SDL2Mixer"
+        ),
+        .target(
+            name: "SDL3Image",
+            dependencies: ["SDL3Swift", "CSDL3Image"],
+            path: "Sources/SDL3Image"
+        ),
+        .target(
+            name: "SDL3Mixer",
+            dependencies: ["SDL3Swift", "CSDL3Mixer"],
+            path: "Sources/SDL3Mixer"
         ),
         .systemLibrary(
             name: "CSDL2Image",

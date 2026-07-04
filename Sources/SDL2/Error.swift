@@ -9,10 +9,15 @@ import CSDL2
 
 /// SDL Error
 public struct SDLError: Error {
-    
+
     public let errorMessage: String
-    
+
     public let context: Context?
+
+    public init(errorMessage: String, context: Context? = nil) {
+        self.errorMessage = errorMessage
+        self.context = context
+    }
 }
 
 extension SDLError: CustomStringConvertible {
@@ -46,7 +51,7 @@ public extension SDLError {
         
         public let line: UInt
         
-        internal init(file: String,
+        public init(file: String,
                       type: StaticString,
                       function: String,
                       line: UInt) {
@@ -64,7 +69,7 @@ public extension SDLError {
     }
 }
 
-internal extension SDLError {
+public extension SDLError {
     
     /// Text for last reported error.
     static func current(context: Context? = nil) -> SDLError? {
@@ -79,7 +84,7 @@ internal extension SDLError {
     }
 }
 
-internal extension CInt {
+public extension CInt {
     
     /// Throws for error codes.
     @inline(__always)
@@ -101,7 +106,7 @@ internal extension CInt {
     }
 }
 
-internal extension Optional {
+public extension Optional {
 
     /// Unwraps optional value, throwing error if nil.
     @inline(__always)

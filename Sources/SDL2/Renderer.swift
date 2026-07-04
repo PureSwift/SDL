@@ -13,9 +13,12 @@ public final class SDLRenderer {
     // MARK: - Properties
     
     internal let internalPointer: OpaquePointer
-    
+
+    /// The underlying `SDL_Renderer` pointer, for interop with other `SDL_*` C APIs.
+    public var unsafePointer: OpaquePointer { internalPointer }
+
     // MARK: - Initialization
-    
+
     deinit {
         SDL_DestroyRenderer(internalPointer)
     }
