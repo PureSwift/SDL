@@ -41,7 +41,15 @@ public final class SDLSurface {
         let internalPointer = SDL_GetWindowSurface(window.internalPointer)
         self.internalPointer = try internalPointer.sdlThrow(type: "SDLSurface")
     }
-    
+
+    /// Adopt an existing, unmanaged `SDL_Surface` pointer (e.g. one returned by `IMG_Load()`).
+    ///
+    /// - Note: Ownership of `pointer` transfers to the new `SDLSurface`; it will be freed
+    ///   via `SDL_FreeSurface` when this instance deinitializes.
+    public init(unsafePointer pointer: UnsafeMutablePointer<SDL_Surface>) {
+        self.internalPointer = pointer
+    }
+
     // MARK: - Accessors
     
     public var width: Int {

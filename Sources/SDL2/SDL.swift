@@ -22,8 +22,30 @@ public struct SDL {
     
     /// Cleans up specific SDL subsystems
     public static func quit(subSystems: BitMaskOptionSet<SubSystem>) {
-        
+
         return SDL_QuitSubSystem(subSystems.rawValue)
+    }
+
+    /// The number of nanoseconds since SDL library initialization.
+    ///
+    /// - Note: SDL2 has no nanosecond-precision tick counter, so this is reconstructed from
+    ///   `SDL_GetPerformanceCounter()` / `SDL_GetPerformanceFrequency()`.
+    public static var ticks: UInt64 {
+        let counter = SDL_GetPerformanceCounter()
+        let frequency = SDL_GetPerformanceFrequency()
+        let whole = counter / frequency
+        let remainder = counter % frequency
+        return whole &* 1_000_000_000 &+ (remainder &* 1_000_000_000) / frequency
+    }
+
+    /// Wait the specified number of nanoseconds before returning.
+    public static func delay(nanoseconds: UInt64) {
+        SDL_Delay(UInt32(nanoseconds / 1_000_000))
+    }
+
+    /// Open a URL/URI in the browser or other appropriate external application.
+    public static func open(url: String) throws(SDLError) {
+        try SDL_OpenURL(url).sdlThrow(type: "SDL")
     }
 }
 

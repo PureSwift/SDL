@@ -25,6 +25,36 @@ public struct SDL {
 
         return SDL_QuitSubSystem(subSystems.rawValue)
     }
+
+    /// The number of nanoseconds since SDL library initialization.
+    public static var ticks: UInt64 {
+        SDL_GetTicksNS()
+    }
+
+    /// Wait the specified number of nanoseconds before returning.
+    public static func delay(nanoseconds: UInt64) {
+        SDL_DelayNS(nanoseconds)
+    }
+
+    /// Open a URL/URI in the browser or other appropriate external application.
+    public static func open(url: String) throws(SDLError) {
+        try SDL_OpenURL(url).sdlThrow(type: "SDL")
+    }
+
+    /// The default playback audio device.
+    public static var defaultPlaybackAudioDevice: AudioDeviceID {
+        AudioDeviceID(rawValue: SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK)
+    }
+}
+
+/// An audio device identifier.
+public struct AudioDeviceID: RawRepresentable, Equatable, Hashable, Sendable {
+
+    public let rawValue: UInt32
+
+    public init(rawValue: UInt32) {
+        self.rawValue = rawValue
+    }
 }
 
 // MARK: - Supporting Types

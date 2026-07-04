@@ -49,7 +49,15 @@ public final class SDLTexture {
         let internalPointer = SDL_CreateTextureFromSurface(renderer.internalPointer, surface.internalPointer)
         self.internalPointer = try internalPointer.sdlThrow(type: "SDLTexture")
     }
-    
+
+    /// Adopt an existing, unmanaged `SDL_Texture` pointer (e.g. one returned by `IMG_LoadTexture()`).
+    ///
+    /// - Note: Ownership of `pointer` transfers to the new `SDLTexture`; it will be destroyed
+    ///   via `SDL_DestroyTexture` when this instance deinitializes.
+    public init(unsafePointer pointer: OpaquePointer) {
+        self.internalPointer = pointer
+    }
+
     // MARK: - Accessors
     
     public func attributes() throws(SDLError) -> Attributes {
@@ -111,11 +119,32 @@ public final class SDLTexture {
      Alpha modulation is not always supported by the renderer; it will return -1 if alpha modulation is not supported.
      */
     public func setAlphaModulation(_ alpha: UInt8) throws(SDLError) {
-        
+
         try SDL_SetTextureAlphaMod(internalPointer, alpha).sdlThrow(type: "SDLTexture")
     }
 
-    
+    /// Get the additional color value multiplied into render copy operations.
+    public func colorModulation() throws(SDLError) -> (red: UInt8, green: UInt8, blue: UInt8) {
+
+        var red: UInt8 = 0
+        var green: UInt8 = 0
+        var blue: UInt8 = 0
+        try SDL_GetTextureColorMod(internalPointer, &red, &green, &blue).sdlThrow(type: "SDLTexture")
+        return (red, green, blue)
+    }
+
+    /// Set an additional color value multiplied into render copy operations.
+    public func setColorModulation(red: UInt8, green: UInt8, blue: UInt8) throws(SDLError) {
+
+        try SDL_SetTextureColorMod(internalPointer, red, green, blue).sdlThrow(type: "SDLTexture")
+    }
+
+    /// Set the scale mode used for texture scale operations.
+    public func setScaleMode(_ mode: ScaleMode) throws(SDLError) {
+
+        try SDL_SetTextureScaleMode(internalPointer, mode.internalValue).sdlThrow(type: "SDLTexture")
+    }
+
     // MARK: - Methods
      
     /// Update the given texture rectangle with new pixel data.
@@ -186,7 +215,31 @@ public extension SDLTexture {
 }
 
 public extension SDLTexture {
-    
+
+    /// The scaling technique used when a texture is drawn at a different size from its source.
+    enum ScaleMode {
+
+        /// Nearest pixel sampling.
+        case nearest
+
+        /// Linear filtering.
+        case linear
+
+        /// Anisotropic filtering.
+        case best
+
+        internal var internalValue: SDL_ScaleMode {
+            switch self {
+            case .nearest: return SDL_ScaleModeNearest
+            case .linear: return SDL_ScaleModeLinear
+            case .best: return SDL_ScaleModeBest
+            }
+        }
+    }
+}
+
+public extension SDLTexture {
+
     /// SDL Texture Attributes
     struct Attributes {
         

@@ -164,9 +164,118 @@ public final class SDLRenderer {
 
         try SDL_RenderFillRect(internalPointer, rectPointer).sdlThrow(type: "SDLRenderer")
     }
+
+    /// Draw the outline of a rectangle on the current rendering target with the drawing color.
+    public func draw(rect: SDL_FRect? = nil) throws(SDLError) {
+
+        let rectPointer: UnsafePointer<SDL_FRect>?
+        if let rect = rect {
+            rectPointer = withUnsafePointer(to: rect) { $0 }
+        } else {
+            rectPointer = nil
+        }
+
+        try SDL_RenderRect(internalPointer, rectPointer).sdlThrow(type: "SDLRenderer")
+    }
+
+    /// Copy a portion of the texture to the current rendering target, rotating it around a
+    /// center point and optionally flipping it.
+    public func copy(_ texture: SDLTexture, source: SDL_FRect? = nil, destination: SDL_FRect? = nil,
+                      angle: Double, center: SDL_FPoint? = nil, flip: BitMaskOptionSet<Flip> = []) throws(SDLError) {
+
+        try withOptionalUnsafePointer(to: source) { sourcePointer throws(SDLError) in
+            try withOptionalUnsafePointer(to: destination) { destinationPointer throws(SDLError) in
+                try withOptionalUnsafePointer(to: center) { centerPointer throws(SDLError) in
+                    try SDL_RenderTextureRotated(
+                        internalPointer,
+                        texture.internalPointer,
+                        sourcePointer,
+                        destinationPointer,
+                        angle,
+                        centerPointer,
+                        SDL_FlipMode(rawValue: flip.rawValue)
+                    ).sdlThrow(type: "SDLRenderer")
+                }
+            }
+        }
+    }
+
+    /// Render a list of colored triangles.
+    public func drawGeometry(vertices: [(position: SDL_FPoint, color: VertexColor)]) throws(SDLError) {
+
+        let sdlVertices = vertices.map {
+            SDL_Vertex(position: $0.position, color: $0.color.internalValue, tex_coord: SDL_FPoint(x: 0, y: 0))
+        }
+
+        try sdlVertices.withUnsafeBufferPointer { buffer throws(SDLError) in
+            try SDL_RenderGeometry(internalPointer, nil, buffer.baseAddress, Int32(buffer.count), nil, 0).sdlThrow(type: "SDLRenderer")
+        }
+    }
+
+    /// Convert window coordinates to coordinates in the rendering target's coordinate space.
+    public func renderCoordinates(fromWindow point: (x: Float, y: Float)) -> (x: Float, y: Float) {
+
+        var x: Float = point.x
+        var y: Float = point.y
+        SDL_RenderCoordinatesFromWindow(internalPointer, point.x, point.y, &x, &y)
+        return (x, y)
+    }
+
+    /// Convert coordinates in the rendering target's coordinate space to window coordinates.
+    public func windowCoordinates(fromRender point: (x: Float, y: Float)) -> (x: Float, y: Float) {
+
+        var x: Float = point.x
+        var y: Float = point.y
+        SDL_RenderCoordinatesToWindow(internalPointer, point.x, point.y, &x, &y)
+        return (x, y)
+    }
 }
 
 // MARK: - Supporting Types
+
+/// Attempts to obtain an `UnsafePointer` to `value`, calling `body` with `nil` if `value` is `nil`.
+internal func withOptionalUnsafePointer<T, Result>(
+    to value: T?,
+    _ body: (UnsafePointer<T>?) throws(SDLError) -> Result
+) throws(SDLError) -> Result {
+
+    guard var value else { return try body(nil) }
+    do { return try withUnsafePointer(to: &value) { try body($0) } }
+    catch { throw error as! SDLError } // compiler error
+}
+
+public extension SDLRenderer {
+
+    /// Flipping actions that can be performed when copying a texture.
+    enum Flip: UInt32, BitMaskOption {
+
+        case horizontal = 0x01
+        case vertical = 0x02
+    }
+}
+
+public extension SDLRenderer {
+
+    /// A color used for `drawGeometry(vertices:)`, independent of a pixel format.
+    struct VertexColor: Equatable, Hashable, Sendable {
+
+        public var red: Float
+        public var green: Float
+        public var blue: Float
+        public var alpha: Float
+
+        public init(red: Float, green: Float, blue: Float, alpha: Float = 1) {
+            self.red = red
+            self.green = green
+            self.blue = blue
+            self.alpha = alpha
+        }
+
+        internal var internalValue: SDL_FColor {
+            SDL_FColor(r: red, g: green, b: blue, a: alpha)
+        }
+    }
+}
 
 public extension SDLRenderer {
 

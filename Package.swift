@@ -12,6 +12,22 @@ let package = Package(
             name: "SDL3Swift",
             targets: ["SDL3Swift"]
         ),
+        .library(
+            name: "CSDL2Image",
+            targets: ["CSDL2Image"]
+        ),
+        .library(
+            name: "CSDL2Mixer",
+            targets: ["CSDL2Mixer"]
+        ),
+        .library(
+            name: "CSDL3Image",
+            targets: ["CSDL3Image"]
+        ),
+        .library(
+            name: "CSDL3Mixer",
+            targets: ["CSDL3Mixer"]
+        ),
         .executable(
             name: "SDLDemo",
             targets: ["SDLDemo"]
@@ -49,6 +65,38 @@ let package = Package(
             providers: [
                 .brew(["sdl3"]),
                 .apt(["libsdl3-dev"])
+            ]
+        ),
+        .systemLibrary(
+            name: "CSDL2Image",
+            pkgConfig: "SDL2_image",
+            providers: [
+                .brew(["sdl2_image"]),
+                .apt(["libsdl2-image-dev"])
+            ]
+        ),
+        .systemLibrary(
+            name: "CSDL2Mixer",
+            pkgConfig: "SDL2_mixer",
+            providers: [
+                .brew(["sdl2_mixer"]),
+                .apt(["libsdl2-mixer-dev"])
+            ]
+        ),
+        .systemLibrary(
+            name: "CSDL3Image",
+            pkgConfig: "sdl3-image",
+            providers: [
+                .brew(["sdl3_image"]),
+                .apt(["libsdl3-image-dev"])
+            ]
+        ),
+        .systemLibrary(
+            name: "CSDL3Mixer",
+            pkgConfig: "sdl3-mixer",
+            providers: [
+                .brew(["sdl3_mixer"]),
+                .apt(["libsdl3-mixer-dev"])
             ]
         ),
         .testTarget(

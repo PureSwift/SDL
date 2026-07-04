@@ -14,7 +14,7 @@ jobs:
     - name: Swift Version
       run: swift --version
     - name: Install dependencies
-      run: brew install sdl2 sdl3
+      run: brew install sdl2 sdl3 sdl2_image sdl2_mixer sdl3_image sdl3_mixer
     - name: Build
       run: swift build -c ${{ matrix.config }}
 
@@ -34,18 +34,31 @@ jobs:
       run: swift --version
     - name: Install dependencies
       run: |
-        apt-get update && apt-get install -y libsdl2-dev cmake ninja-build pkg-config \
+        apt-get update && apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev \
+        cmake ninja-build pkg-config \
         libasound2-dev libpulse-dev libaudio-dev libfribidi-dev libjack-dev libsndio-dev \
         libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
         libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
         libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev libusb-1.0-0-dev \
-        libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev
-    # noble's apt repos don't have a libsdl3-dev package yet, so build SDL3 from source
+        libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev \
+        libjpeg-dev libpng-dev libtiff-dev libwebp-dev libavif-dev \
+        libflac-dev libvorbis-dev libopus-dev libopusfile-dev libmpg123-dev libxmp-dev libmodplug-dev
+    # noble's apt repos don't have libsdl3-dev/libsdl3-image-dev/libsdl3-mixer-dev packages yet,
+    # so build SDL3, SDL3_image, and SDL3_mixer from source (matching the versions installed via
+    # Homebrew on macOS).
     - name: Install SDL3
       run: |
         git clone --depth 1 --branch release-3.4.12 https://github.com/libsdl-org/SDL.git /tmp/SDL3
         cmake -S /tmp/SDL3 -B /tmp/SDL3/build -GNinja -DCMAKE_BUILD_TYPE=Release
         cmake --build /tmp/SDL3/build
         cmake --install /tmp/SDL3/build --prefix /usr
+        git clone --depth 1 --branch release-3.4.4 https://github.com/libsdl-org/SDL_image.git /tmp/SDL3_image
+        cmake -S /tmp/SDL3_image -B /tmp/SDL3_image/build -GNinja -DCMAKE_BUILD_TYPE=Release
+        cmake --build /tmp/SDL3_image/build
+        cmake --install /tmp/SDL3_image/build --prefix /usr
+        git clone --depth 1 --branch release-3.2.4 https://github.com/libsdl-org/SDL_mixer.git /tmp/SDL3_mixer
+        cmake -S /tmp/SDL3_mixer -B /tmp/SDL3_mixer/build -GNinja -DCMAKE_BUILD_TYPE=Release
+        cmake --build /tmp/SDL3_mixer/build
+        cmake --install /tmp/SDL3_mixer/build --prefix /usr
     - name: Build
       run: swift build -c ${{ matrix.config }}

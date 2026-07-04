@@ -50,6 +50,14 @@ public final class SDLTexture {
         self.internalPointer = try internalPointer.sdlThrow(type: "SDLTexture")
     }
 
+    /// Adopt an existing, unmanaged `SDL_Texture` pointer (e.g. one returned by `IMG_LoadTexture()`).
+    ///
+    /// - Note: Ownership of `pointer` transfers to the new `SDLTexture`; it will be destroyed
+    ///   via `SDL_DestroyTexture` when this instance deinitializes.
+    public init(unsafePointer pointer: UnsafeMutablePointer<SDL_Texture>) {
+        self.internalPointer = pointer
+    }
+
     // MARK: - Accessors
 
     public func attributes() throws(SDLError) -> Attributes {
@@ -115,6 +123,27 @@ public final class SDLTexture {
         try SDL_SetTextureAlphaMod(internalPointer, alpha).sdlThrow(type: "SDLTexture")
     }
 
+    /// Get the additional color value multiplied into render copy operations.
+    public func colorModulation() throws(SDLError) -> (red: UInt8, green: UInt8, blue: UInt8) {
+
+        var red: UInt8 = 0
+        var green: UInt8 = 0
+        var blue: UInt8 = 0
+        try SDL_GetTextureColorMod(internalPointer, &red, &green, &blue).sdlThrow(type: "SDLTexture")
+        return (red, green, blue)
+    }
+
+    /// Set an additional color value multiplied into render copy operations.
+    public func setColorModulation(red: UInt8, green: UInt8, blue: UInt8) throws(SDLError) {
+
+        try SDL_SetTextureColorMod(internalPointer, red, green, blue).sdlThrow(type: "SDLTexture")
+    }
+
+    /// Set the scale mode used for texture scale operations.
+    public func setScaleMode(_ mode: ScaleMode) throws(SDLError) {
+
+        try SDL_SetTextureScaleMode(internalPointer, mode.internalValue).sdlThrow(type: "SDLTexture")
+    }
 
     // MARK: - Methods
 
@@ -185,6 +214,30 @@ public extension SDLTexture {
 
         internal var internalValue: SDL_TextureAccess {
             SDL_TextureAccess(rawValue: UInt32(rawValue))
+        }
+    }
+}
+
+public extension SDLTexture {
+
+    /// The scaling technique used when a texture is drawn at a different size from its source.
+    enum ScaleMode {
+
+        /// Nearest pixel sampling.
+        case nearest
+
+        /// Linear filtering.
+        case linear
+
+        /// Nearest pixel sampling with improved scaling for pixel art.
+        case pixelArt
+
+        internal var internalValue: SDL_ScaleMode {
+            switch self {
+            case .nearest: return SDL_SCALEMODE_NEAREST
+            case .linear: return SDL_SCALEMODE_LINEAR
+            case .pixelArt: return SDL_SCALEMODE_PIXELART
+            }
         }
     }
 }
