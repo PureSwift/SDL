@@ -52,14 +52,14 @@ public extension SDLDisplayMode {
     /// Fill in information about the desktop display mode.
     init(display: SDLVideoDisplay) throws(SDLError) {
 
-        let pointer = try SDL_GetDesktopDisplayMode(display.rawValue).sdlThrow(type: type(of: self))
+        let pointer = try SDL_GetDesktopDisplayMode(display.rawValue).sdlThrow(type: "SDLDisplayMode")
         self.init(pointer.pointee)
     }
 
     /// Fill in information about the current display mode.
     init(currentModeOf display: SDLVideoDisplay) throws(SDLError) {
 
-        let pointer = try SDL_GetCurrentDisplayMode(display.rawValue).sdlThrow(type: type(of: self))
+        let pointer = try SDL_GetCurrentDisplayMode(display.rawValue).sdlThrow(type: "SDLDisplayMode")
         self.init(pointer.pointee)
     }
 }

@@ -27,7 +27,7 @@ public final class SDLWindow: Identifiable {
 
         let internalPointer = SDL_CreateWindow(title, Int32(frame.width), Int32(frame.height), options.rawValue)
 
-        self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
+        self.internalPointer = try internalPointer.sdlThrow(type: "SDLWindow")
 
         SDL_SetWindowPosition(internalPointer, frame.x.rawValue, frame.y.rawValue)
     }
@@ -43,7 +43,7 @@ public final class SDLWindow: Identifiable {
     public func displayMode() throws(SDLError) -> SDLDisplayMode {
 
         let displayID = SDL_GetDisplayForWindow(internalPointer)
-        let pointer = try SDL_GetCurrentDisplayMode(displayID).sdlThrow(type: type(of: self))
+        let pointer = try SDL_GetCurrentDisplayMode(displayID).sdlThrow(type: "SDLWindow")
         return SDLDisplayMode(pointer.pointee)
     }
 
@@ -86,7 +86,7 @@ public final class SDLWindow: Identifiable {
     /// Copy the window surface to the screen.
     public func updateSurface() throws(SDLError) {
 
-        try SDL_UpdateWindowSurface(internalPointer).sdlThrow(type: type(of: self))
+        try SDL_UpdateWindowSurface(internalPointer).sdlThrow(type: "SDLWindow")
     }
 
     /// Set the display mode to use when a window is visible at fullscreen.

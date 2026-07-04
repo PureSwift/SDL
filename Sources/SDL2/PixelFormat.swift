@@ -26,7 +26,7 @@ public final class SDLPixelFormat {
     public init(format: SDLPixelFormat.Format) throws(SDLError) {
         
         let internalFormat = SDL_AllocFormat(format.rawValue)
-        self.internalPointer = try internalFormat.sdlThrow(type: type(of: self))
+        self.internalPointer = try internalFormat.sdlThrow(type: "SDLPixelFormat")
     }
     
     // MARK: - Accessors
@@ -42,7 +42,7 @@ public final class SDLPixelFormat {
     /// Set the palette for a pixel format structure
     public func setPalette(_ palette: SDLPalette) throws(SDLError) {
         
-        try SDL_SetPixelFormatPalette(internalPointer, palette.internalPointer).sdlThrow(type: type(of: self))
+        try SDL_SetPixelFormatPalette(internalPointer, palette.internalPointer).sdlThrow(type: "SDLPixelFormat")
     }
 }
 

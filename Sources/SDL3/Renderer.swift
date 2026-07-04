@@ -30,7 +30,7 @@ public final class SDLRenderer {
         } else {
             internalPointer = SDL_CreateRenderer(window.internalPointer, nil)
         }
-        self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
+        self.internalPointer = try internalPointer.sdlThrow(type: "SDLRenderer")
     }
 
     /// The color used for drawing operations (Rect, Line and Clear).
@@ -41,7 +41,7 @@ public final class SDLRenderer {
         var blue: UInt8 = 0
         var alpha: UInt8 = 0
 
-        try SDL_GetRenderDrawColor(internalPointer, &red, &green, &blue, &alpha).sdlThrow(type: type(of: self))
+        try SDL_GetRenderDrawColor(internalPointer, &red, &green, &blue, &alpha).sdlThrow(type: "SDLRenderer")
 
         return (red, green, blue, alpha)
     }
@@ -49,7 +49,7 @@ public final class SDLRenderer {
     /// Set the color used for drawing operations (Rect, Line and Clear).
     public func setDrawColor(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8 = .max) throws(SDLError) {
 
-         try SDL_SetRenderDrawColor(internalPointer, red, green, blue, alpha).sdlThrow(type: type(of: self))
+         try SDL_SetRenderDrawColor(internalPointer, red, green, blue, alpha).sdlThrow(type: "SDLRenderer")
     }
 
     /// Current rendering target texture.
@@ -58,7 +58,7 @@ public final class SDLRenderer {
     /// Set a texture as the current rendering target.
     public func setTarget(_ newValue: SDLTexture?) throws(SDLError) {
 
-        try SDL_SetRenderTarget(internalPointer, newValue?.internalPointer).sdlThrow(type: type(of: self))
+        try SDL_SetRenderTarget(internalPointer, newValue?.internalPointer).sdlThrow(type: "SDLRenderer")
 
         // hold reference
         self.target = newValue
@@ -68,7 +68,7 @@ public final class SDLRenderer {
     public func drawBlendMode() throws(SDLError) -> BitMaskOptionSet<SDLBlendMode> {
 
         var value = SDL_BlendMode(0)
-        try SDL_GetRenderDrawBlendMode(internalPointer, &value).sdlThrow(type: type(of: self))
+        try SDL_GetRenderDrawBlendMode(internalPointer, &value).sdlThrow(type: "SDLRenderer")
         return BitMaskOptionSet<SDLBlendMode>(rawValue: value)
     }
 
@@ -77,19 +77,19 @@ public final class SDLRenderer {
     /// - Note: If the blend mode is not supported, the closest supported mode is chosen.
     public func setDrawBlendMode(_ newValue: BitMaskOptionSet<SDLBlendMode>) throws(SDLError) {
 
-        try SDL_SetRenderDrawBlendMode(internalPointer, SDL_BlendMode(newValue.rawValue)).sdlThrow(type: type(of: self))
+        try SDL_SetRenderDrawBlendMode(internalPointer, SDL_BlendMode(newValue.rawValue)).sdlThrow(type: "SDLRenderer")
     }
 
     /// Set a device independent resolution for rendering.
     public func setLogicalSize(width: Int32, height: Int32, presentation: LogicalPresentation = .letterbox) throws(SDLError) {
 
-        try SDL_SetRenderLogicalPresentation(internalPointer, width, height, presentation.internalValue).sdlThrow(type: type(of: self))
+        try SDL_SetRenderLogicalPresentation(internalPointer, width, height, presentation.internalValue).sdlThrow(type: "SDLRenderer")
     }
 
     /// Toggle VSync of the given renderer.
     public func setVSync(_ vsync: VSync) throws(SDLError) {
 
-        try SDL_SetRenderVSync(internalPointer, vsync.rawValue).sdlThrow(type: type(of: self))
+        try SDL_SetRenderVSync(internalPointer, vsync.rawValue).sdlThrow(type: "SDLRenderer")
     }
 
     /// The output size in pixels of a rendering context.
@@ -109,7 +109,7 @@ public final class SDLRenderer {
     /// This function clears the entire rendering target, ignoring the viewport.
     public func clear() throws(SDLError) {
 
-        try SDL_RenderClear(internalPointer).sdlThrow(type: type(of: self))
+        try SDL_RenderClear(internalPointer).sdlThrow(type: "SDLRenderer")
     }
 
     /// Update the screen with rendering performed.
@@ -122,34 +122,34 @@ public final class SDLRenderer {
     public func copy(_ texture: SDLTexture, source: SDL_FRect, destination: SDL_FRect) throws(SDLError) {
         var s = source
         var d = destination
-        try SDL_RenderTexture(internalPointer, texture.internalPointer, &s, &d).sdlThrow(type: type(of: self))
+        try SDL_RenderTexture(internalPointer, texture.internalPointer, &s, &d).sdlThrow(type: "SDLRenderer")
     }
 
     /// Copy a portion of the texture to the current rendering target.
     public func copy(_ texture: SDLTexture, source s: inout SDL_FRect, destination d: inout SDL_FRect) throws(SDLError) {
-        try SDL_RenderTexture(internalPointer, texture.internalPointer, &s, &d).sdlThrow(type: type(of: self))
+        try SDL_RenderTexture(internalPointer, texture.internalPointer, &s, &d).sdlThrow(type: "SDLRenderer")
     }
 
     /// Copy a portion of the texture to the current rendering target.
     public func copy(_ texture: SDLTexture, source: SDL_FRect) throws(SDLError) {
         var s = source
-        try SDL_RenderTexture(internalPointer, texture.internalPointer, &s, nil).sdlThrow(type: type(of: self))
+        try SDL_RenderTexture(internalPointer, texture.internalPointer, &s, nil).sdlThrow(type: "SDLRenderer")
     }
 
     /// Copy a portion of the texture to the current rendering target.
     public func copy(_ texture: SDLTexture, source s: inout SDL_FRect) throws(SDLError) {
-        try SDL_RenderTexture(internalPointer, texture.internalPointer, &s, nil).sdlThrow(type: type(of: self))
+        try SDL_RenderTexture(internalPointer, texture.internalPointer, &s, nil).sdlThrow(type: "SDLRenderer")
     }
 
     /// Copy a portion of the texture to the current rendering target.
     public func copy(_ texture: SDLTexture, destination: SDL_FRect) throws(SDLError) {
         var d = destination
-        try SDL_RenderTexture(internalPointer, texture.internalPointer, nil, &d).sdlThrow(type: type(of: self))
+        try SDL_RenderTexture(internalPointer, texture.internalPointer, nil, &d).sdlThrow(type: "SDLRenderer")
     }
 
     /// Copy a portion of the texture to the current rendering target.
     public func copy(_ texture: SDLTexture, destination d: inout SDL_FRect) throws(SDLError) {
-        try SDL_RenderTexture(internalPointer, texture.internalPointer, nil, &d).sdlThrow(type: type(of: self))
+        try SDL_RenderTexture(internalPointer, texture.internalPointer, nil, &d).sdlThrow(type: "SDLRenderer")
     }
 
     /// Fill a rectangle on the current rendering target with the drawing color.
@@ -162,7 +162,7 @@ public final class SDLRenderer {
             rectPointer = nil
         }
 
-        try SDL_RenderFillRect(internalPointer, rectPointer).sdlThrow(type: type(of: self))
+        try SDL_RenderFillRect(internalPointer, rectPointer).sdlThrow(type: "SDLRenderer")
     }
 }
 

@@ -37,7 +37,7 @@ public final class SDLTexture {
                                                       Int32(width),
                                                       Int32(height))
 
-        self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
+        self.internalPointer = try internalPointer.sdlThrow(type: "SDLTexture")
     }
 
     /// Create a texture from an existing surface.
@@ -47,7 +47,7 @@ public final class SDLTexture {
     public init(renderer: SDLRenderer, surface: SDLSurface) throws(SDLError) {
 
         let internalPointer = SDL_CreateTextureFromSurface(renderer.internalPointer, surface.internalPointer)
-        self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
+        self.internalPointer = try internalPointer.sdlThrow(type: "SDLTexture")
     }
 
     // MARK: - Accessors
@@ -71,14 +71,14 @@ public final class SDLTexture {
     public func blendMode() throws(SDLError) -> BitMaskOptionSet<SDLBlendMode> {
 
         var value = SDL_BlendMode(0)
-        try SDL_GetTextureBlendMode(internalPointer, &value).sdlThrow(type: type(of: self))
+        try SDL_GetTextureBlendMode(internalPointer, &value).sdlThrow(type: "SDLTexture")
         return BitMaskOptionSet<SDLBlendMode>(rawValue: value)
     }
 
     /// Set the blend mode used for texture copy operations.
     public func setBlendMode(_ newValue: BitMaskOptionSet<SDLBlendMode>) throws(SDLError) {
 
-        try SDL_SetTextureBlendMode(internalPointer, SDL_BlendMode(newValue.rawValue)).sdlThrow(type: type(of: self))
+        try SDL_SetTextureBlendMode(internalPointer, SDL_BlendMode(newValue.rawValue)).sdlThrow(type: "SDLTexture")
     }
 
     /**
@@ -94,7 +94,7 @@ public final class SDLTexture {
     public func alphaModulation() throws(SDLError) -> UInt8 {
 
         var alpha: UInt8 = 0
-        try SDL_GetTextureAlphaMod(internalPointer, &alpha).sdlThrow(type: type(of: self))
+        try SDL_GetTextureAlphaMod(internalPointer, &alpha).sdlThrow(type: "SDLTexture")
         return alpha
     }
 
@@ -112,7 +112,7 @@ public final class SDLTexture {
      */
     public func setAlphaModulation(_ alpha: UInt8) throws(SDLError) {
 
-        try SDL_SetTextureAlphaMod(internalPointer, alpha).sdlThrow(type: type(of: self))
+        try SDL_SetTextureAlphaMod(internalPointer, alpha).sdlThrow(type: "SDLTexture")
     }
 
 
@@ -135,7 +135,7 @@ public final class SDLTexture {
         }
         defer { rectPointer?.deallocate() }
 
-        try SDL_UpdateTexture(internalPointer, rectPointer, pixels, Int32(pitch)).sdlThrow(type: type(of: self))
+        try SDL_UpdateTexture(internalPointer, rectPointer, pixels, Int32(pitch)).sdlThrow(type: "SDLTexture")
     }
 
     /// Lock a portion of the texture for write-only pixel access (only valid for streaming textures).
@@ -154,9 +154,9 @@ public final class SDLTexture {
 
         // must be SDL_TEXTUREACCESS_STREAMING or throws
         if var rect {
-            try SDL_LockTexture(internalPointer, &rect, &pixels, &pitch).sdlThrow(type: type(of: self))
+            try SDL_LockTexture(internalPointer, &rect, &pixels, &pitch).sdlThrow(type: "SDLTexture")
         } else {
-            try SDL_LockTexture(internalPointer, nil, &pixels, &pitch).sdlThrow(type: type(of: self))
+            try SDL_LockTexture(internalPointer, nil, &pixels, &pitch).sdlThrow(type: "SDLTexture")
         }
 
         defer { SDL_UnlockTexture(internalPointer) }

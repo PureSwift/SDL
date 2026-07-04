@@ -24,7 +24,7 @@ public final class SDLPalette {
     public init(numberOfColors: Int) throws(SDLError) {
 
         let internalFormat = SDL_CreatePalette(Int32(numberOfColors))
-        self.internalPointer = try internalFormat.sdlThrow(type: type(of: self))
+        self.internalPointer = try internalFormat.sdlThrow(type: "SDLPalette")
     }
 
     // MARK: - Accessors

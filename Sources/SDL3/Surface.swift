@@ -29,7 +29,7 @@ public final class SDLSurface {
 
         let internalPointer = SDL_CreateSurface(CInt(size.width), CInt(size.height), format)
 
-        self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
+        self.internalPointer = try internalPointer.sdlThrow(type: "SDLSurface")
     }
 
     /// Create a surface with the specified pixel format.
@@ -38,7 +38,7 @@ public final class SDLSurface {
 
         let internalPointer = SDL_CreateSurface(CInt(size.width), CInt(size.height), SDL_PixelFormat(rawValue: format.rawValue))
 
-        self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
+        self.internalPointer = try internalPointer.sdlThrow(type: "SDLSurface")
     }
 
     // Get the SDL surface associated with the window.
@@ -50,7 +50,7 @@ public final class SDLSurface {
     public init(window: SDLWindow) throws(SDLError) {
 
         let internalPointer = SDL_GetWindowSurface(window.internalPointer)
-        self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
+        self.internalPointer = try internalPointer.sdlThrow(type: "SDLSurface")
     }
 
     // MARK: - Accessors
@@ -112,7 +112,7 @@ public final class SDLSurface {
     /// as critical system locks may be held during this time.
     internal func lock() throws(SDLError) {
 
-        try SDL_LockSurface(internalPointer).sdlThrow(type: type(of: self))
+        try SDL_LockSurface(internalPointer).sdlThrow(type: "SDLSurface")
     }
 
     internal func unlock() {
@@ -123,7 +123,7 @@ public final class SDLSurface {
     public func blit(to surface: SDLSurface, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) throws(SDLError) {
 
         // TODO rects
-        try SDL_BlitSurface(internalPointer, nil, surface.internalPointer, nil).sdlThrow(type: type(of: self))
+        try SDL_BlitSurface(internalPointer, nil, surface.internalPointer, nil).sdlThrow(type: "SDLSurface")
     }
 
     public func fill(rect: SDL_Rect? = nil, color: SDLColor) throws(SDLError) {
@@ -135,6 +135,6 @@ public final class SDLSurface {
             rectPointer = nil
         }
 
-        try SDL_FillSurfaceRect(internalPointer, rectPointer, color.rawValue).sdlThrow(type: type(of: self))
+        try SDL_FillSurfaceRect(internalPointer, rectPointer, color.rawValue).sdlThrow(type: "SDLSurface")
     }
 }

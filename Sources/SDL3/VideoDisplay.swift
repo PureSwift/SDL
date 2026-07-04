@@ -58,7 +58,7 @@ public extension SDLVideoDisplay {
     func modes() throws(SDLError) -> [SDLDisplayMode] {
 
         var count: Int32 = 0
-        let pointer = try SDL_GetFullscreenDisplayModes(rawValue, &count).sdlThrow(type: type(of: self))
+        let pointer = try SDL_GetFullscreenDisplayModes(rawValue, &count).sdlThrow(type: "SDLVideoDisplay")
 
         defer { SDL_free(pointer) }
 

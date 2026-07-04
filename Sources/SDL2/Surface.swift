@@ -27,7 +27,7 @@ public final class SDLSurface {
         
         let internalPointer = SDL_CreateRGBSurface(0, CInt(size.width), CInt(size.height), CInt(depth), CUnsignedInt(mask.red), CUnsignedInt(mask.green), CUnsignedInt(mask.blue), CUnsignedInt(mask.alpha))
         
-        self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
+        self.internalPointer = try internalPointer.sdlThrow(type: "SDLSurface")
     }
     
     // Get the SDL surface associated with the window.
@@ -39,7 +39,7 @@ public final class SDLSurface {
     public init(window: SDLWindow) throws(SDLError) {
         
         let internalPointer = SDL_GetWindowSurface(window.internalPointer)
-        self.internalPointer = try internalPointer.sdlThrow(type: type(of: self))
+        self.internalPointer = try internalPointer.sdlThrow(type: "SDLSurface")
     }
     
     // MARK: - Accessors
@@ -101,7 +101,7 @@ public final class SDLSurface {
     /// as critical system locks may be held during this time.
     internal func lock() throws(SDLError) {
         
-        try SDL_LockSurface(internalPointer).sdlThrow(type: type(of: self))
+        try SDL_LockSurface(internalPointer).sdlThrow(type: "SDLSurface")
     }
     
     internal func unlock() {
@@ -112,7 +112,7 @@ public final class SDLSurface {
     public func blit(to surface: SDLSurface, source: SDL_Rect? = nil, destination: SDL_Rect? = nil) throws(SDLError) {
         
         // TODO rects
-        try SDL_UpperBlit(internalPointer, nil, surface.internalPointer, nil).sdlThrow(type: type(of: self))
+        try SDL_UpperBlit(internalPointer, nil, surface.internalPointer, nil).sdlThrow(type: "SDLSurface")
     }
     
     public func fill(rect: SDL_Rect? = nil, color: SDLColor) throws(SDLError) {
@@ -124,6 +124,6 @@ public final class SDLSurface {
             rectPointer = nil
         }
         
-        try SDL_FillRect(internalPointer, rectPointer, color.rawValue).sdlThrow(type: type(of: self))
+        try SDL_FillRect(internalPointer, rectPointer, color.rawValue).sdlThrow(type: "SDLSurface")
     }
 }

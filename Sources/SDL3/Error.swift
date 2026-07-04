@@ -47,14 +47,14 @@ public extension SDLError {
         public let line: UInt
 
         internal init(file: String,
-                      type: Any,
+                      type: StaticString,
                       function: String,
                       line: UInt) {
 
             self.file = file
             self.function = function
             self.line = line
-            self.type = String(reflecting: type)
+            self.type = type.description
         }
 
         public var description: String {
@@ -87,7 +87,7 @@ internal extension Bool {
         file: String = #file,
         function: String = #function,
         line: UInt = #line,
-        type: Any
+        type: StaticString
     ) throws(SDLError) {
 
         guard self else {
@@ -108,13 +108,13 @@ internal extension Optional {
     func sdlThrow(file: String = #file,
                   function: String = #function,
                   line: UInt = #line,
-                  type: Any) throws(SDLError) -> Wrapped {
+                  type: StaticString) throws(SDLError) -> Wrapped {
 
         guard let value = self else {
             let context = SDLError.Context(file: file, type: type, function: function, line: line)
             guard let error = SDLError.current(context: context) else {
-                assertionFailure("No error for nil value \(Wrapped.self)")
-                throw SDLError(errorMessage: "Nil value \(Wrapped.self)", context: context)
+                assertionFailure("No error for nil value")
+                throw SDLError(errorMessage: "Nil value (" + type.description + ")", context: context)
             }
             throw error
         }

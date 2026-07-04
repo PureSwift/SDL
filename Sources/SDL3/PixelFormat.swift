@@ -23,7 +23,7 @@ public final class SDLPixelFormat {
     public init(format: SDLPixelFormat.Format) throws(SDLError) {
 
         let internalFormat = SDL_GetPixelFormatDetails(SDL_PixelFormat(rawValue: format.rawValue))
-        self.internalPointer = try internalFormat.sdlThrow(type: type(of: self))
+        self.internalPointer = try internalFormat.sdlThrow(type: "SDLPixelFormat")
     }
 
     // MARK: - Accessors
