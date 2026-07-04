@@ -1,0 +1,5 @@
+module CSDL2Mixer [system] {
+    header "shim.h"
+    link "SDL2_mixer"
+    export *
+}

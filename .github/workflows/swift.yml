@@ -14,7 +14,7 @@ jobs:
     - name: Swift Version
       run: swift --version
     - name: Install dependencies
-      run: brew install sdl2 sdl3
+      run: brew install sdl2 sdl3 sdl2_image sdl2_mixer sdl3-image sdl3-mixer
     - name: Build
       run: swift build -c ${{ matrix.config }}
 
