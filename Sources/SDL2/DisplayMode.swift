@@ -1,6 +1,6 @@
 //
 //  DisplayMode.swift
-//  SDL
+//  SDL2
 //
 //  Created by Alsey Coleman Miller on 10/19/18.
 //
@@ -48,7 +48,7 @@ public extension SDLDisplayMode {
     init(display: SDLVideoDisplay, index: SDLDisplayMode.Index) throws(SDLError) {
         
         var internalValue = SDL_DisplayMode()
-        try SDL_GetDisplayMode(Int32(display.rawValue), Int32(index.rawValue), &internalValue).sdlThrow(type: type(of: self))
+        try SDL_GetDisplayMode(Int32(display.rawValue), Int32(index.rawValue), &internalValue).sdlThrow(type: "SDLDisplayMode")
         self.init(internalValue)
     }
 }

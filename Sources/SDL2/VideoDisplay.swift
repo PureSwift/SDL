@@ -1,6 +1,6 @@
 //
 //  VideoDisplay.swift
-//  SDL
+//  SDL2
 //
 //  Created by Alsey Coleman Miller on 10/19/18.
 //
@@ -54,7 +54,7 @@ public extension SDLVideoDisplay {
         let count = SDL_GetNumDisplayModes(Int32(rawValue))
         
         // make sure value is valid
-        try count.sdlThrow(type: type(of: self))
+        try count.sdlThrow(type: "SDLVideoDisplay")
         
         let set = CountableSet<SDLDisplayMode.Index>(count: Int(count))
         
