@@ -75,10 +75,22 @@ public final class SDLWindow: Identifiable {
     
     /// Raise a window above other windows and set the input focus
     public func raise() {
-        
+
         SDL_RaiseWindow(internalPointer)
     }
-    
+
+    /// Move the mouse cursor to the given position within the window.
+    public func warpMouse(to point: (x: Float, y: Float)) {
+
+        SDL_WarpMouseInWindow(internalPointer, Int32(point.x), Int32(point.y))
+    }
+
+    /// Set the minimum size of the window's client area.
+    public func setMinimumSize(width: Int32, height: Int32) {
+
+        SDL_SetWindowMinimumSize(internalPointer, width, height)
+    }
+
     /// The output size in pixels of a rendering context.
     public var rendererSize: (width: Int, height: Int)? {
         
