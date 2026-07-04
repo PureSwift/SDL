@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import SDL
+import SDL2Swift
 import CSDL2
 
 @main

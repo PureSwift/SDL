@@ -1,8 +1,8 @@
 import Foundation
 import XCTest
-@testable import SDL
+@testable import SDL2Swift
 
-class SDLTests: XCTestCase {
+class SDL2Tests: XCTestCase {
     
     func testDrivers() {
         
