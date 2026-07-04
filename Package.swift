@@ -87,7 +87,7 @@ let package = Package(
             name: "CSDL3Image",
             pkgConfig: "sdl3-image",
             providers: [
-                .brew(["sdl3-image"]),
+                .brew(["sdl3_image"]),
                 .apt(["libsdl3-image-dev"])
             ]
         ),
@@ -95,7 +95,7 @@ let package = Package(
             name: "CSDL3Mixer",
             pkgConfig: "sdl3-mixer",
             providers: [
-                .brew(["sdl3-mixer"]),
+                .brew(["sdl3_mixer"]),
                 .apt(["libsdl3-mixer-dev"])
             ]
         ),
