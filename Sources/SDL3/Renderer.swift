@@ -233,6 +233,50 @@ public final class SDLRenderer {
 
 // MARK: - Supporting Types
 
+/// Attempts to obtain an `UnsafePointer` to `value`, calling `body` with `nil` if `value` is `nil`.
+internal func withOptionalUnsafePointer<T, Result>(
+    to value: T?,
+    _ body: (UnsafePointer<T>?) throws(SDLError) -> Result
+) throws(SDLError) -> Result {
+
+    guard var value else { return try body(nil) }
+    do { return try withUnsafePointer(to: &value) { try body($0) } }
+    catch { throw error as! SDLError } // compiler error
+}
+
+public extension SDLRenderer {
+
+    /// Flipping actions that can be performed when copying a texture.
+    enum Flip: UInt32, BitMaskOption {
+
+        case horizontal = 0x01
+        case vertical = 0x02
+    }
+}
+
+public extension SDLRenderer {
+
+    /// A color used for `drawGeometry(vertices:)`, independent of a pixel format.
+    struct VertexColor: Equatable, Hashable, Sendable {
+
+        public var red: Float
+        public var green: Float
+        public var blue: Float
+        public var alpha: Float
+
+        public init(red: Float, green: Float, blue: Float, alpha: Float = 1) {
+            self.red = red
+            self.green = green
+            self.blue = blue
+            self.alpha = alpha
+        }
+
+        internal var internalValue: SDL_FColor {
+            SDL_FColor(r: red, g: green, b: blue, a: alpha)
+        }
+    }
+}
+
 public extension SDLRenderer {
 
     /// The behavior of texture edges during rendering.
