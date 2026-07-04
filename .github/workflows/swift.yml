@@ -4,45 +4,48 @@ jobs:
 
   macos:
     name: macOS
-    runs-on: macos-latest
+    runs-on: macos-26
+    strategy:
+      matrix:
+        config: ["debug", "release"]
     steps:
-    - name: Install Swift
-      uses: slashmo/install-swift@v0.3.0
-      with:
-        version: 6.0.3
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Swift Version
       run: swift --version
     - name: Install dependencies
       run: brew install sdl2 sdl3
-    - name: Build (Debug)
-      run: swift build -c debug
-    - name: Build (Release)
-      run: swift build -c release
-    - name: Test (Debug)
-      run: swift test -c debug
-  
+    - name: Build
+      run: swift build -c ${{ matrix.config }}
+
   linux:
-    name: Linux
+    name: Linux (${{ matrix.container }})
+    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        swift: [6.0.3]
-    runs-on: ubuntu-20.04
+        container: ["swift:latest", "swiftlang/swift:nightly-noble"]
+        config: ["debug", "release"]
+    container: ${{ matrix.container }}
     steps:
-    - name: Install Swift
-      uses: slashmo/install-swift@v0.3.0
-      with:
-        version: ${{ matrix.swift }}
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Swift Version
       run: swift --version
     - name: Install dependencies
-      run: sudo apt-get install -y libsdl2-dev libsdl3-dev
-    - name: Build (Debug)
-      run: swift build -c debug
-    - name: Build (Release)
-      run: swift build -c release
-    - name: Test (Debug)
-      run: swift test -c debug
+      run: |
+        apt-get update && apt-get install -y libsdl2-dev cmake ninja-build pkg-config \
+        libasound2-dev libpulse-dev libaudio-dev libfribidi-dev libjack-dev libsndio-dev \
+        libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
+        libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
+        libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev libthai-dev libusb-1.0-0-dev \
+        libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev
+    # noble's apt repos don't have a libsdl3-dev package yet, so build SDL3 from source
+    - name: Install SDL3
+      run: |
+        git clone --depth 1 --branch release-3.4.12 https://github.com/libsdl-org/SDL.git /tmp/SDL3
+        cmake -S /tmp/SDL3 -B /tmp/SDL3/build -GNinja -DCMAKE_BUILD_TYPE=Release
+        cmake --build /tmp/SDL3/build
+        cmake --install /tmp/SDL3/build --prefix /usr
+    - name: Build
+      run: swift build -c ${{ matrix.config }}
