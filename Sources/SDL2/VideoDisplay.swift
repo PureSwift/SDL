@@ -1,6 +1,6 @@
 //
 //  VideoDisplay.swift
-//  SDL
+//  SDL2
 //
 //  Created by Alsey Coleman Miller on 10/19/18.
 //

@@ -1,6 +1,6 @@
 //
 //  Color.swift
-//  SDL
+//  SDL2
 //
 //  Created by Alsey Coleman Miller on 5/4/19.
 //

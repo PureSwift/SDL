@@ -1,6 +1,6 @@
 //
 //  PixelFormat.swift
-//  SDL
+//  SDL2
 //
 //  Created by Alsey Coleman Miller on 6/6/17.
 //
