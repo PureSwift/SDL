@@ -49,7 +49,15 @@ public final class SDLTexture {
         let internalPointer = SDL_CreateTextureFromSurface(renderer.internalPointer, surface.internalPointer)
         self.internalPointer = try internalPointer.sdlThrow(type: "SDLTexture")
     }
-    
+
+    /// Adopt an existing, unmanaged `SDL_Texture` pointer (e.g. one returned by `IMG_LoadTexture()`).
+    ///
+    /// - Note: Ownership of `pointer` transfers to the new `SDLTexture`; it will be destroyed
+    ///   via `SDL_DestroyTexture` when this instance deinitializes.
+    public init(unsafePointer pointer: OpaquePointer) {
+        self.internalPointer = pointer
+    }
+
     // MARK: - Accessors
     
     public func attributes() throws(SDLError) -> Attributes {
