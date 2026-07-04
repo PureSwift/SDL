@@ -72,3 +72,6 @@ fastlane/test_output
 Packages
 SDL.xcodeproj
 
+# VS Code
+.vscode/
+.claude/
