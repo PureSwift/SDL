@@ -125,17 +125,35 @@ public final class SDLWindow: Identifiable {
     
     /// Set the title of a window
     public var title: String {
-        
+
         get {
-            
+
             return String(cString: SDL_GetWindowTitle(internalPointer))
-            
+
         }
         set {
-            
+
             SDL_SetWindowTitle(internalPointer, newValue)
-            
+
         }
+    }
+
+    /// Set the window's fullscreen state.
+    ///
+    /// - Note: This is distinct from ``setDisplayMode(_:)``, which sets the mode used while fullscreen.
+    public func setFullscreen(_ fullscreen: Bool, desktop: Bool = false) throws(SDLError) {
+
+        let flags: UInt32 = fullscreen ? (desktop ? Option.fullscreenDesktop.rawValue : Option.fullscreen.rawValue) : 0
+        try SDL_SetWindowFullscreen(internalPointer, flags).sdlThrow(type: "SDLWindow")
+    }
+
+    /// The position of the window, in screen coordinates.
+    public var position: (x: Int32, y: Int32) {
+
+        var x: Int32 = 0
+        var y: Int32 = 0
+        SDL_GetWindowPosition(internalPointer, &x, &y)
+        return (x, y)
     }
 }
 
