@@ -36,6 +36,9 @@ public enum SDLEvent {
     case gamepadRemoved(which: JoystickID)
     case gamepadButtonDown(which: JoystickID, button: SDLGamepad.Button)
     case gamepadButtonUp(which: JoystickID, button: SDLGamepad.Button)
+    case mouseWheel(windowID: UInt32, x: Float, y: Float)
+    case textInput(windowID: UInt32, text: String)
+    case windowCloseRequested(windowID: UInt32)
 
     /// An event that isn't yet modeled by `SDLEvent`. The raw `SDL_EventType` value is preserved.
     case unknown(UInt32)
@@ -82,6 +85,15 @@ public enum SDLEvent {
 
         case SDL_EVENT_GAMEPAD_BUTTON_UP:
             self = .gamepadButtonUp(which: JoystickID(rawValue: event.gbutton.which), button: SDLGamepad.Button(rawValue: Int32(event.gbutton.button)))
+
+        case SDL_EVENT_MOUSE_WHEEL:
+            self = .mouseWheel(windowID: event.wheel.windowID, x: event.wheel.x, y: event.wheel.y)
+
+        case SDL_EVENT_TEXT_INPUT:
+            self = .textInput(windowID: event.text.windowID, text: String(cString: event.text.text))
+
+        case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+            self = .windowCloseRequested(windowID: event.window.windowID)
 
         default:
             self = .unknown(event.type)
