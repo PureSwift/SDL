@@ -64,4 +64,42 @@ public extension SDLVideoDisplay {
 
         return (0 ..< Int(count)).compactMap { pointer[$0].map { SDLDisplayMode($0.pointee) } }
     }
+
+    /// The bounds of the display, in screen coordinates.
+    var bounds: SDLRect {
+
+        get throws(SDLError) {
+
+            var rect = SDL_Rect()
+            try SDL_GetDisplayBounds(rawValue, &rect).sdlThrow(type: "SDLVideoDisplay")
+            return SDLRect(rect)
+        }
+    }
+
+    /// The usable bounds of the display, in screen coordinates, excluding space taken up by menu bars, docks, etc.
+    var usableBounds: SDLRect {
+
+        get throws(SDLError) {
+
+            var rect = SDL_Rect()
+            try SDL_GetDisplayUsableBounds(rawValue, &rect).sdlThrow(type: "SDLVideoDisplay")
+            return SDLRect(rect)
+        }
+    }
+}
+
+public extension SDLWindow {
+
+    /// The display associated with this window.
+    var display: SDLVideoDisplay {
+        SDLVideoDisplay(rawValue: SDL_GetDisplayForWindow(internalPointer))
+    }
+}
+
+public extension SDL {
+
+    /// The name of the currently initialized video driver, or `nil` if video is not initialized.
+    static var currentVideoDriver: String? {
+        SDL_GetCurrentVideoDriver().map { String(cString: $0) }
+    }
 }
