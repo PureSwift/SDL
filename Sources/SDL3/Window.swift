@@ -130,6 +130,32 @@ public final class SDLWindow: Identifiable {
 
         }
     }
+
+    /// Set the window's fullscreen state.
+    ///
+    /// - Note: This is distinct from ``setDisplayMode(_:)``, which sets the mode used while fullscreen.
+    public func setFullscreen(_ fullscreen: Bool) throws(SDLError) {
+
+        try SDL_SetWindowFullscreen(internalPointer, fullscreen).sdlThrow(type: "SDLWindow")
+    }
+
+    /// The position of the window, in screen coordinates.
+    public var position: (x: Int32, y: Int32) {
+
+        get throws(SDLError) {
+
+            var x: Int32 = 0
+            var y: Int32 = 0
+            try SDL_GetWindowPosition(internalPointer, &x, &y).sdlThrow(type: "SDLWindow")
+            return (x, y)
+        }
+    }
+
+    /// Block until any pending window state is applied.
+    public func sync() throws(SDLError) {
+
+        try SDL_SyncWindow(internalPointer).sdlThrow(type: "SDLWindow")
+    }
 }
 
 // MARK: - Supporting Types
