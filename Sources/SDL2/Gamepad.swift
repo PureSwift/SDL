@@ -49,6 +49,27 @@ public final class SDLGamepad: Identifiable {
     public func isPressed(_ button: Button) -> Bool {
         SDL_GameControllerGetButton(internalPointer, SDL_GameControllerButton(rawValue: button.rawValue)) != 0
     }
+
+    /// The implementation dependent name of the gamepad.
+    public var name: String? {
+        guard let cString = SDL_GameControllerName(internalPointer) else { return nil }
+        return String(cString: cString)
+    }
+
+    /// Whether the gamepad has a rumble motor.
+    public var hasRumble: Bool {
+        SDL_GameControllerHasRumble(internalPointer) != SDL_FALSE
+    }
+
+    /// Start a rumble effect on the gamepad.
+    public func rumble(lowFrequency: UInt16, highFrequency: UInt16, duration milliseconds: UInt32) throws(SDLError) {
+        try SDL_GameControllerRumble(internalPointer, lowFrequency, highFrequency, milliseconds).sdlThrow(type: "SDLGamepad")
+    }
+
+    /// Set the player index of the gamepad.
+    public func setPlayerIndex(_ playerIndex: Int32) {
+        SDL_GameControllerSetPlayerIndex(internalPointer, playerIndex)
+    }
 }
 
 // MARK: - Supporting Types
@@ -99,5 +120,40 @@ public extension SDLGamepad {
         public static var dpadDown: Button { Button(rawValue: SDL_CONTROLLER_BUTTON_DPAD_DOWN.rawValue) }
         public static var dpadLeft: Button { Button(rawValue: SDL_CONTROLLER_BUTTON_DPAD_LEFT.rawValue) }
         public static var dpadRight: Button { Button(rawValue: SDL_CONTROLLER_BUTTON_DPAD_RIGHT.rawValue) }
+    }
+}
+
+public extension SDLGamepad.Axis {
+
+    /// A human-readable name for the axis, or `nil` if it doesn't have one.
+    var stringValue: String? {
+        guard let cString = SDL_GameControllerGetStringForAxis(SDL_GameControllerAxis(rawValue: rawValue)) else { return nil }
+        return String(cString: cString)
+    }
+}
+
+public extension SDLGamepad.Button {
+
+    /// A human-readable name for the button, or `nil` if it doesn't have one.
+    var stringValue: String? {
+        guard let cString = SDL_GameControllerGetStringForButton(SDL_GameControllerButton(rawValue: rawValue)) else { return nil }
+        return String(cString: cString)
+    }
+}
+
+public extension SDL {
+
+    /// Add support for gamepads that SDL is unaware of, loading a mapping file.
+    static func addGamepadMappings(fromFile path: String) throws(SDLError) -> Int32 {
+
+        let file = try SDL_RWFromFile(path, "rb").sdlThrow(type: "SDL")
+        let count = SDL_GameControllerAddMappingsFromRW(file, 1)
+        try count.sdlThrow(type: "SDL")
+        return count
+    }
+
+    /// Whether the given joystick device index is supported by the gamepad interface.
+    static func isGamepad(deviceIndex: Int32) -> Bool {
+        SDL_IsGameController(deviceIndex) != SDL_FALSE
     }
 }

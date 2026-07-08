@@ -36,6 +36,9 @@ public enum SDLEvent {
     case gamepadRemoved(which: JoystickID)
     case gamepadButtonDown(which: JoystickID, button: SDLGamepad.Button)
     case gamepadButtonUp(which: JoystickID, button: SDLGamepad.Button)
+    case mouseWheel(windowID: UInt32, x: Int32, y: Int32)
+    case textInput(windowID: UInt32, text: String)
+    case windowCloseRequested(windowID: UInt32)
 
     /// An event that isn't yet modeled by `SDLEvent`. The raw `SDL_EventType` value is preserved.
     case unknown(UInt32)
@@ -63,11 +66,24 @@ public enum SDLEvent {
             self = .keyUp(scancode: Scancode(rawValue: event.key.keysym.scancode.rawValue), keycode: Keycode(rawValue: event.key.keysym.sym))
 
         case SDL_WINDOWEVENT:
-            guard event.window.event == UInt8(SDL_WINDOWEVENT_RESIZED.rawValue) else {
+            switch UInt32(event.window.event) {
+            case SDL_WINDOWEVENT_RESIZED.rawValue:
+                self = .windowResized(windowID: event.window.windowID, width: event.window.data1, height: event.window.data2)
+            case SDL_WINDOWEVENT_CLOSE.rawValue:
+                self = .windowCloseRequested(windowID: event.window.windowID)
+            default:
                 self = .unknown(event.type)
-                return
             }
-            self = .windowResized(windowID: event.window.windowID, width: event.window.data1, height: event.window.data2)
+
+        case SDL_MOUSEWHEEL:
+            self = .mouseWheel(windowID: event.wheel.windowID, x: event.wheel.x, y: event.wheel.y)
+
+        case SDL_TEXTINPUT:
+            var textInputEvent = event.text
+            let text = withUnsafeBytes(of: &textInputEvent.text) { rawBuffer in
+                String(cString: rawBuffer.baseAddress!.assumingMemoryBound(to: CChar.self))
+            }
+            self = .textInput(windowID: event.text.windowID, text: text)
 
         case SDL_FINGERDOWN:
             self = .fingerDown(touchID: TouchID(rawValue: event.tfinger.touchId), fingerID: FingerID(rawValue: event.tfinger.fingerId), x: event.tfinger.x, y: event.tfinger.y)
