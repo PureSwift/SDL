@@ -5,6 +5,10 @@ let package = Package(
     name: "SDL",
     products: [
         .library(
+            name: "SDL1Swift",
+            targets: ["SDL1Swift"]
+        ),
+        .library(
             name: "SDL2Swift",
             targets: ["SDL2Swift"]
         ),
@@ -53,6 +57,21 @@ let package = Package(
         .executableTarget(
             name: "SDLDemo",
             dependencies: ["SDL2Swift"]
+        ),
+        // Named `SDL1Swift` (not `SDL1`) so the built module doesn't share a name
+        // with the `SDL` system library, which would shadow `-lSDL` when linking.
+        .target(
+            name: "SDL1Swift",
+            dependencies: ["CSDL"],
+            path: "Sources/SDL1"
+        ),
+        .systemLibrary(
+            name: "CSDL",
+            pkgConfig: "sdl",
+            providers: [
+                .brew(["sdl12-compat"]),
+                .apt(["libsdl1.2-compat-dev"])
+            ]
         ),
         // Named `SDL2Swift` (not `SDL2`) so the built module doesn't share a name
         // with the `SDL2` system library, which would shadow `-lSDL2` when linking.
@@ -137,6 +156,9 @@ let package = Package(
                 .apt(["libsdl3-mixer-dev"])
             ]
         ),
+        .testTarget(
+            name: "SDL1Tests",
+            dependencies: ["SDL1Swift"]),
         .testTarget(
             name: "SDL2Tests",
             dependencies: ["SDL2Swift"]),
