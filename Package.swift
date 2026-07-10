@@ -70,7 +70,7 @@ let package = Package(
             pkgConfig: "sdl",
             providers: [
                 .brew(["sdl12-compat"]),
-                .apt(["libsdl1.2-compat-dev"])
+                .apt(["libsdl1.2-dev"])
             ]
         ),
         // Named `SDL2Swift` (not `SDL2`) so the built module doesn't share a name
