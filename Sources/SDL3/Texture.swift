@@ -236,7 +236,7 @@ public extension SDLTexture {
             switch self {
             case .nearest: return SDL_SCALEMODE_NEAREST
             case .linear: return SDL_SCALEMODE_LINEAR
-            case .pixelArt: return SDL_SCALEMODE_PIXELART
+            case .pixelArt: return SDL_ScaleMode(rawValue: 2) // SDL_SCALEMODE_PIXELART, which SDL 3.2 does not declare
             }
         }
     }
