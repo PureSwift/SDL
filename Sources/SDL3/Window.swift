@@ -14,6 +14,9 @@ public final class SDLWindow: Identifiable {
 
     internal let internalPointer: OpaquePointer
 
+    /// The underlying `SDL_Window` pointer, for interop with other `SDL_*` C APIs.
+    public var unsafePointer: OpaquePointer { internalPointer }
+
     // MARK: - Initialization
 
     deinit {
