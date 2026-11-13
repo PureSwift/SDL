@@ -70,3 +70,18 @@ public extension SDLRenderer {
         try SDL_RenderDebugText(internalPointer, x, y, text).sdlThrow(type: "SDLRenderer")
     }
 }
+
+public extension SDLRenderer.Driver {
+
+    /// The rendering driver with a name, such as `opengles2`.
+    init?(name: String) {
+
+        for index in 0 ..< Int(SDL_GetNumRenderDrivers()) {
+            if let cString = SDL_GetRenderDriver(Int32(index)), String(cString: cString) == name {
+                self.init(rawValue: index)
+                return
+            }
+        }
+        return nil
+    }
+}
