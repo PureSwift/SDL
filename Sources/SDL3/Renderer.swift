@@ -14,13 +14,23 @@ public final class SDLRenderer {
 
     internal let internalPointer: OpaquePointer
 
+    private let ownsPointer: Bool
+
     /// The underlying `SDL_Renderer` pointer, for interop with other `SDL_*` C APIs.
     public var unsafePointer: OpaquePointer { internalPointer }
 
     // MARK: - Initialization
 
     deinit {
-        SDL_DestroyRenderer(internalPointer)
+        if ownsPointer { SDL_DestroyRenderer(internalPointer) }
+    }
+
+    /// Refer to a renderer something else owns, such as another library's.
+    ///
+    /// - Note: The renderer is not destroyed when this instance deinitializes.
+    public init(unownedPointer pointer: OpaquePointer) {
+        self.internalPointer = pointer
+        self.ownsPointer = false
     }
 
     /// Create a 2D rendering context for a window.
@@ -34,6 +44,7 @@ public final class SDLRenderer {
             internalPointer = SDL_CreateRenderer(window.internalPointer, nil)
         }
         self.internalPointer = try internalPointer.sdlThrow(type: "SDLRenderer")
+        self.ownsPointer = true
     }
 
     /// The color used for drawing operations (Rect, Line and Clear).
