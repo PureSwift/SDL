@@ -127,3 +127,12 @@ public extension GLAttribute {
         public static var es: Profile { Profile(rawValue: Int32(SDL_GL_CONTEXT_PROFILE_ES)) }
     }
 }
+
+public extension SDLGLContext {
+
+    /// Release the current OpenGL context from this thread.
+    static func clearCurrent() throws(SDLError) {
+
+        try SDL_GL_MakeCurrent(nil, nil).sdlThrow(type: "SDLGLContext")
+    }
+}
