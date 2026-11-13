@@ -103,3 +103,11 @@ public extension SDL {
         SDL_GetCurrentVideoDriver().map { String(cString: $0) }
     }
 }
+
+public extension SDLVideoDisplay {
+
+    /// The content scale of the display: how much the desktop asks to enlarge what is drawn on it.
+    var contentScale: Float {
+        SDL_GetDisplayContentScale(rawValue)
+    }
+}
