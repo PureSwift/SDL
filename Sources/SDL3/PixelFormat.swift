@@ -72,6 +72,8 @@ public extension SDLPixelFormat.Format {
 
     /// SDL_PIXELFORMAT_ARGB8888
     static var argb8888: SDLPixelFormat.Format { SDLPixelFormat.Format(rawValue: SDL_PIXELFORMAT_ARGB8888.rawValue) }
+    /// SDL_PIXELFORMAT_ABGR8888
+    static var abgr8888: SDLPixelFormat.Format { SDLPixelFormat.Format(rawValue: SDL_PIXELFORMAT_ABGR8888.rawValue) }
 }
 
 // MARK: - ExpressibleByIntegerLiteral
