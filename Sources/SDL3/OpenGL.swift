@@ -34,6 +34,15 @@ public final class SDLGLContext {
 
         try SDL_GL_MakeCurrent(window.internalPointer, internalPointer).sdlThrow(type: "SDLGLContext")
     }
+
+    /// Make this context current on this thread without a window's surface.
+    public func makeCurrentWithoutSurface() throws(SDLError) {
+
+        try SDL_GL_MakeCurrent(nil, internalPointer).sdlThrow(type: "SDLGLContext")
+    }
+
+    /// The underlying `SDL_GLContext`, to tell contexts apart.
+    public var unsafePointer: OpaquePointer { internalPointer }
 }
 
 // MARK: - SDLWindow
@@ -109,6 +118,7 @@ public struct GLAttribute: RawRepresentable, Equatable, Hashable, Sendable {
     public static var multisampleBuffers: GLAttribute { GLAttribute(rawValue: SDL_GL_MULTISAMPLEBUFFERS.rawValue) }
     public static var multisampleSamples: GLAttribute { GLAttribute(rawValue: SDL_GL_MULTISAMPLESAMPLES.rawValue) }
     public static var shareWithCurrentContext: GLAttribute { GLAttribute(rawValue: SDL_GL_SHARE_WITH_CURRENT_CONTEXT.rawValue) }
+    public static var contextReleaseBehavior: GLAttribute { GLAttribute(rawValue: SDL_GL_CONTEXT_RELEASE_BEHAVIOR.rawValue) }
 }
 
 public extension GLAttribute {
@@ -125,6 +135,24 @@ public extension GLAttribute {
         public static var core: Profile { Profile(rawValue: Int32(SDL_GL_CONTEXT_PROFILE_CORE)) }
         public static var compatibility: Profile { Profile(rawValue: Int32(SDL_GL_CONTEXT_PROFILE_COMPATIBILITY)) }
         public static var es: Profile { Profile(rawValue: Int32(SDL_GL_CONTEXT_PROFILE_ES)) }
+    }
+}
+
+public extension GLAttribute {
+
+    /// Values for the `contextReleaseBehavior` attribute.
+    struct ReleaseBehavior: RawRepresentable, Equatable, Hashable, Sendable {
+
+        public let rawValue: Int32
+
+        public init(rawValue: Int32) {
+            self.rawValue = rawValue
+        }
+
+        /// Letting go of the context doesn't flush what was drawn with it.
+        public static var none: ReleaseBehavior { ReleaseBehavior(rawValue: Int32(SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE)) }
+        /// Letting go of the context flushes it.
+        public static var flush: ReleaseBehavior { ReleaseBehavior(rawValue: Int32(SDL_GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH)) }
     }
 }
 
