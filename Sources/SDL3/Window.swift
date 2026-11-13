@@ -14,13 +14,33 @@ public final class SDLWindow: Identifiable {
 
     internal let internalPointer: OpaquePointer
 
+    private let ownsPointer: Bool
+
     /// The underlying `SDL_Window` pointer, for interop with other `SDL_*` C APIs.
     public var unsafePointer: OpaquePointer { internalPointer }
 
     // MARK: - Initialization
 
     deinit {
-        SDL_DestroyWindow(internalPointer)
+        if ownsPointer { SDL_DestroyWindow(internalPointer) }
+    }
+
+    /// Create a window of a size, which the window system places.
+    public init(title: String, width: Int, height: Int,
+                options: BitMaskOptionSet<SDLWindow.Option> = []) throws(SDLError) {
+
+        let internalPointer = SDL_CreateWindow(title, Int32(width), Int32(height), options.rawValue)
+
+        self.internalPointer = try internalPointer.sdlThrow(type: "SDLWindow")
+        self.ownsPointer = true
+    }
+
+    /// Refer to a window something else owns.
+    ///
+    /// - Note: The window is not destroyed when this instance deinitializes.
+    public init(unownedPointer pointer: OpaquePointer) {
+        self.internalPointer = pointer
+        self.ownsPointer = false
     }
 
     /// Create a window with the specified position, dimensions, and flags.
@@ -31,6 +51,7 @@ public final class SDLWindow: Identifiable {
         let internalPointer = SDL_CreateWindow(title, Int32(frame.width), Int32(frame.height), options.rawValue)
 
         self.internalPointer = try internalPointer.sdlThrow(type: "SDLWindow")
+        self.ownsPointer = true
 
         SDL_SetWindowPosition(internalPointer, frame.x.rawValue, frame.y.rawValue)
     }
