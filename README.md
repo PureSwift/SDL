@@ -10,3 +10,4 @@ libraries) they actually need:
 - `SDL3Mixer`: Swift wrapper for `SDL_mixer`'s new `MIX_*` audio API, depends on `SDL3Swift`.
 - `CSDL2Image` / `CSDL3Image`: raw C module for `SDL_image`, for direct interop.
 - `CSDL2Mixer` / `CSDL3Mixer`: raw C module for `SDL_mixer`, for direct interop.
+- `CSDL3TTF`: raw C module for [SDL_ttf](https://github.com/libsdl-org/SDL_ttf), for direct interop.
