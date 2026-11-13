@@ -48,6 +48,10 @@ let package = Package(
             name: "CSDL3Mixer",
             targets: ["CSDL3Mixer"]
         ),
+        .library(
+            name: "CSDL3TTF",
+            targets: ["CSDL3TTF"]
+        ),
         .executable(
             name: "SDLDemo",
             targets: ["SDLDemo"]
@@ -154,6 +158,14 @@ let package = Package(
             providers: [
                 .brew(["sdl3_mixer"]),
                 .apt(["libsdl3-mixer-dev"])
+            ]
+        ),
+        .systemLibrary(
+            name: "CSDL3TTF",
+            pkgConfig: "sdl3-ttf",
+            providers: [
+                .brew(["sdl3_ttf"]),
+                .apt(["libsdl3-ttf-dev"])
             ]
         ),
         .testTarget(
