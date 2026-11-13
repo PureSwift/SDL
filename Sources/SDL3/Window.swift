@@ -25,6 +25,16 @@ public final class SDLWindow: Identifiable {
         if ownsPointer { SDL_DestroyWindow(internalPointer) }
     }
 
+    /// Create a window of a size, which the window system places.
+    public init(title: String, width: Int, height: Int,
+                options: BitMaskOptionSet<SDLWindow.Option> = []) throws(SDLError) {
+
+        let internalPointer = SDL_CreateWindow(title, Int32(width), Int32(height), options.rawValue)
+
+        self.internalPointer = try internalPointer.sdlThrow(type: "SDLWindow")
+        self.ownsPointer = true
+    }
+
     /// Refer to a window something else owns.
     ///
     /// - Note: The window is not destroyed when this instance deinitializes.
