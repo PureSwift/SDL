@@ -52,6 +52,21 @@ public enum SDLEvent {
     case gamepadButtonDown(which: JoystickID, button: SDLGamepad.Button)
     case gamepadButtonUp(which: JoystickID, button: SDLGamepad.Button)
 
+    /// A two-finger pinch on a trackpad or touch screen. `scale` is the
+    /// change since the last update: below 1 the fingers closed, above 1
+    /// they spread.
+    case pinch(windowID: UInt32, phase: PinchPhase, scale: Float)
+
+    /// Something dragged from another app over a window, or dropped on it.
+    case drop(windowID: UInt32, event: Drop)
+
+    /// The system switched between light and dark; see `SDL.systemTheme`.
+    case systemThemeChanged
+
+    /// An event the app pushed with `SDL.pushUserEvent`, of a type from
+    /// `SDL.registerEvents`.
+    case user(type: UInt32, windowID: UInt32, code: Int32)
+
     /// An event that isn't yet modeled by `SDLEvent`. The raw `SDL_EventType` value is preserved.
     case unknown(UInt32)
 
@@ -63,6 +78,26 @@ public enum SDLEvent {
         case pixelSizeChanged(width: Int32, height: Int32)
         case focusGained, focusLost
         case closeRequested
+        case mouseEnter, mouseLeave
+        /// The scale of the display the window is on changed, or it moved
+        /// to a display with another scale.
+        case displayScaleChanged
+    }
+
+    /// The phases of a pinch.
+    public enum PinchPhase: Equatable, Sendable {
+        case began, updated, ended
+    }
+
+    /// What a drag from another app did. A drop is a `began`, a `file` or
+    /// `text` for each thing dropped, then a `completed`.
+    public enum Drop: Equatable, Sendable {
+        case began
+        /// The drag moved over the window.
+        case position(x: Float, y: Float)
+        case file(path: String, x: Float, y: Float)
+        case text(String, x: Float, y: Float)
+        case completed(x: Float, y: Float)
     }
 
     internal init(_ event: SDL_Event) {
@@ -89,6 +124,29 @@ public enum SDLEvent {
         case SDL_EVENT_WINDOW_FOCUS_GAINED: self = .window(windowID: event.window.windowID, event: .focusGained)
         case SDL_EVENT_WINDOW_FOCUS_LOST: self = .window(windowID: event.window.windowID, event: .focusLost)
         case SDL_EVENT_WINDOW_CLOSE_REQUESTED: self = .window(windowID: event.window.windowID, event: .closeRequested)
+        case SDL_EVENT_WINDOW_MOUSE_ENTER: self = .window(windowID: event.window.windowID, event: .mouseEnter)
+        case SDL_EVENT_WINDOW_MOUSE_LEAVE: self = .window(windowID: event.window.windowID, event: .mouseLeave)
+        case SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED: self = .window(windowID: event.window.windowID, event: .displayScaleChanged)
+
+        case SDL_EVENT_PINCH_BEGIN: self = .pinch(windowID: event.pinch.windowID, phase: .began, scale: event.pinch.scale)
+        case SDL_EVENT_PINCH_UPDATE: self = .pinch(windowID: event.pinch.windowID, phase: .updated, scale: event.pinch.scale)
+        case SDL_EVENT_PINCH_END: self = .pinch(windowID: event.pinch.windowID, phase: .ended, scale: event.pinch.scale)
+
+        case SDL_EVENT_DROP_BEGIN:
+            self = .drop(windowID: event.drop.windowID, event: .began)
+        case SDL_EVENT_DROP_POSITION:
+            self = .drop(windowID: event.drop.windowID, event: .position(x: event.drop.x, y: event.drop.y))
+        case SDL_EVENT_DROP_FILE:
+            let path = event.drop.data.map { String(cString: $0) } ?? ""
+            self = .drop(windowID: event.drop.windowID, event: .file(path: path, x: event.drop.x, y: event.drop.y))
+        case SDL_EVENT_DROP_TEXT:
+            let text = event.drop.data.map { String(cString: $0) } ?? ""
+            self = .drop(windowID: event.drop.windowID, event: .text(text, x: event.drop.x, y: event.drop.y))
+        case SDL_EVENT_DROP_COMPLETE:
+            self = .drop(windowID: event.drop.windowID, event: .completed(x: event.drop.x, y: event.drop.y))
+
+        case SDL_EVENT_SYSTEM_THEME_CHANGED:
+            self = .systemThemeChanged
 
         case SDL_EVENT_MOUSE_MOTION:
             let m = event.motion
@@ -139,7 +197,11 @@ public enum SDLEvent {
             self = .gamepadButtonUp(which: JoystickID(rawValue: event.gbutton.which), button: SDLGamepad.Button(rawValue: Int32(event.gbutton.button)))
 
         default:
-            self = .unknown(event.type)
+            if event.type >= SDL_EVENT_USER.rawValue, event.type <= SDL_EVENT_LAST.rawValue {
+                self = .user(type: event.type, windowID: event.user.windowID, code: event.user.code)
+            } else {
+                self = .unknown(event.type)
+            }
         }
     }
 }

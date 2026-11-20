@@ -7,6 +7,11 @@ import CSDL3
 
 public extension SDL {
 
+    /// Whether the clipboard holds text that isn't empty.
+    static var hasClipboardText: Bool {
+        SDL_HasClipboardText()
+    }
+
     /// The clipboard's text, empty if it holds none.
     static var clipboardText: String {
 
