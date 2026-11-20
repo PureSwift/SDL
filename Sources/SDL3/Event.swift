@@ -316,3 +316,30 @@ public struct JoystickID: RawRepresentable, Equatable, Hashable, Sendable {
         self.rawValue = rawValue
     }
 }
+
+public extension SDLEvent {
+
+    /// The window an event is for, if it's for one.
+    var windowID: UInt32? {
+        switch self {
+        case let .window(windowID, _),
+             let .mouseMotion(windowID, _, _, _, _, _, _),
+             let .mouseButtonDown(windowID, _, _, _, _, _),
+             let .mouseButtonUp(windowID, _, _, _, _, _),
+             let .mouseWheel(windowID, _, _, _, _, _, _),
+             let .keyDown(windowID, _, _, _, _),
+             let .keyUp(windowID, _, _, _, _),
+             let .textInput(windowID, _),
+             let .fingerDown(windowID, _, _, _, _),
+             let .fingerMotion(windowID, _, _, _, _),
+             let .fingerUp(windowID, _, _, _, _),
+             let .fingerCanceled(windowID, _, _, _, _),
+             let .pinch(windowID, _, _),
+             let .drop(windowID, _),
+             let .user(_, windowID, _):
+            return windowID == 0 ? nil : windowID
+        case .quit, .gamepadAdded, .gamepadRemoved, .gamepadButtonDown, .gamepadButtonUp, .systemThemeChanged, .unknown:
+            return nil
+        }
+    }
+}

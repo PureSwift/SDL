@@ -400,7 +400,7 @@ public extension SDLRenderer {
         }
 
         /// The name of the rendering driver, or `nil` for the default driver.
-        internal var name: String? {
+        public var name: String? {
 
             guard rawValue >= 0,
                   let cString = SDL_GetRenderDriver(Int32(rawValue))
