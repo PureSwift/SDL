@@ -100,6 +100,18 @@ public enum SDLEvent {
         case completed(x: Float, y: Float)
     }
 
+    /// A pinch from SDL_PinchFingerEvent: the event's type, reserved word
+    /// and timestamp (sixteen bytes), then the scale and the window.
+    private static func pinch(_ event: SDL_Event, phase: PinchPhase) -> SDLEvent {
+        withUnsafeBytes(of: event) { bytes in
+            .pinch(
+                windowID: bytes.loadUnaligned(fromByteOffset: 20, as: UInt32.self),
+                phase: phase,
+                scale: bytes.loadUnaligned(fromByteOffset: 16, as: Float.self)
+            )
+        }
+    }
+
     internal init(_ event: SDL_Event) {
 
         func finger(_ make: (UInt32, TouchID, FingerID, Float, Float) -> SDLEvent) -> SDLEvent {
@@ -128,9 +140,12 @@ public enum SDLEvent {
         case SDL_EVENT_WINDOW_MOUSE_LEAVE: self = .window(windowID: event.window.windowID, event: .mouseLeave)
         case SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED: self = .window(windowID: event.window.windowID, event: .displayScaleChanged)
 
-        case SDL_EVENT_PINCH_BEGIN: self = .pinch(windowID: event.pinch.windowID, phase: .began, scale: event.pinch.scale)
-        case SDL_EVENT_PINCH_UPDATE: self = .pinch(windowID: event.pinch.windowID, phase: .updated, scale: event.pinch.scale)
-        case SDL_EVENT_PINCH_END: self = .pinch(windowID: event.pinch.windowID, phase: .ended, scale: event.pinch.scale)
+        // SDL_EVENT_PINCH_BEGIN, _UPDATE and _END, and SDL_PinchFingerEvent,
+        // which SDL 3.2's headers do not declare: named by their values, and
+        // read by the event's layout, so this builds against either.
+        case SDL_EventType(rawValue: 0x710): self = .pinch(event, phase: .began)
+        case SDL_EventType(rawValue: 0x711): self = .pinch(event, phase: .updated)
+        case SDL_EventType(rawValue: 0x712): self = .pinch(event, phase: .ended)
 
         case SDL_EVENT_DROP_BEGIN:
             self = .drop(windowID: event.drop.windowID, event: .began)
