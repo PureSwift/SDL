@@ -35,6 +35,28 @@ public final class SDLWindow: Identifiable {
         self.ownsPointer = true
     }
 
+    /// Create a window with properties, for what the other initializers
+    /// can't ask for, such as a Wayland surface with a role of the app's
+    /// own (`SDL_PROP_WINDOW_CREATE_WAYLAND_SURFACE_ROLE_CUSTOM_BOOLEAN`).
+    ///
+    /// The properties are only read here; the caller still owns them.
+    public init(properties: SDLProperties) throws(SDLError) {
+
+        let internalPointer = SDL_CreateWindowWithProperties(properties.rawValue)
+
+        self.internalPointer = try internalPointer.sdlThrow(type: "SDLWindow")
+        self.ownsPointer = true
+    }
+
+    /// Create a window with properties set on a group made for it, and
+    /// destroyed once the window exists.
+    public convenience init(properties configure: (SDLProperties) throws(SDLError) -> Void) throws(SDLError) {
+        let properties = try SDLProperties.create()
+        defer { properties.destroy() }
+        try configure(properties)
+        try self.init(properties: properties)
+    }
+
     /// Refer to a window something else owns.
     ///
     /// - Note: The window is not destroyed when this instance deinitializes.
