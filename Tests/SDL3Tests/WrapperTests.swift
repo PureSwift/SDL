@@ -134,6 +134,47 @@ final class WrapperTests: XCTestCase {
         }
     }
 
+    func testPropertiesAreSetAndRead() throws {
+        try withVideo {
+            let properties = try SDLProperties.create()
+            defer { properties.destroy() }
+            try properties.setBoolean("org.pureswift.flag", true)
+            try properties.setNumber("org.pureswift.count", 42)
+            try properties.setString("org.pureswift.name", "Cacao")
+            var value = 7
+            try withUnsafeMutablePointer(to: &value) { pointer throws(SDLError) in
+                try properties.setPointer("org.pureswift.pointer", UnsafeMutableRawPointer(pointer))
+                XCTAssertEqual(properties.pointer("org.pureswift.pointer"), UnsafeMutableRawPointer(pointer))
+            }
+            XCTAssertTrue(properties.boolean("org.pureswift.flag"))
+            XCTAssertEqual(properties.number("org.pureswift.count"), 42)
+            XCTAssertEqual(properties.string("org.pureswift.name"), "Cacao")
+            try properties.setString("org.pureswift.name", nil)
+            XCTAssertFalse(properties.has("org.pureswift.name"))
+        }
+    }
+
+    func testWindowsAreCreatedWithProperties() throws {
+        try withVideo {
+            let window = try SDLWindow { properties throws(SDLError) in
+                try properties.setString(SDL_PROP_WINDOW_CREATE_TITLE_STRING, "Properties")
+                try properties.setNumber(SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, 200)
+                try properties.setNumber(SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, 100)
+                try properties.setBoolean(SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN, true)
+            }
+            XCTAssertEqual(window.title, "Properties")
+            XCTAssertEqual(window.size.width, 200)
+            XCTAssertEqual(window.size.height, 100)
+        }
+    }
+
+    func testAppMetadata() throws {
+        try SDL.setAppMetadataProperty(SDL_PROP_APP_METADATA_IDENTIFIER_STRING, "org.pureswift.SDLTests")
+        XCTAssertEqual(SDL.appMetadataProperty(SDL_PROP_APP_METADATA_IDENTIFIER_STRING), "org.pureswift.SDLTests")
+        try SDL.setAppMetadataProperty(SDL_PROP_APP_METADATA_IDENTIFIER_STRING, nil)
+        XCTAssertNil(SDL.appMetadataProperty(SDL_PROP_APP_METADATA_IDENTIFIER_STRING))
+    }
+
     func testSystemState() throws {
         try withVideo {
             // Whatever they are, they're read without failing.
