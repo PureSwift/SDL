@@ -74,6 +74,15 @@ public extension SDLPixelFormat.Format {
     static var argb8888: SDLPixelFormat.Format { SDLPixelFormat.Format(rawValue: SDL_PIXELFORMAT_ARGB8888.rawValue) }
     /// SDL_PIXELFORMAT_ABGR8888
     static var abgr8888: SDLPixelFormat.Format { SDLPixelFormat.Format(rawValue: SDL_PIXELFORMAT_ABGR8888.rawValue) }
+
+    /// SDL_PIXELFORMAT_RGBA32: the bytes R, G, B, A in memory, whatever the
+    /// machine's byte order (ABGR8888 on a little-endian one, RGBA8888 on a
+    /// big-endian one).
+    static var rgba32: SDLPixelFormat.Format { SDLPixelFormat.Format(rawValue: SDL_PIXELFORMAT_RGBA32.rawValue) }
+
+    /// SDL_PIXELFORMAT_BGRA32: the bytes B, G, R, A in memory, whatever the
+    /// machine's byte order.
+    static var bgra32: SDLPixelFormat.Format { SDLPixelFormat.Format(rawValue: SDL_PIXELFORMAT_BGRA32.rawValue) }
 }
 
 // MARK: - ExpressibleByIntegerLiteral
